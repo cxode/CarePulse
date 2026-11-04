@@ -1,0 +1,306 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Daily Logger | CarePulse</title>
+
+    <link rel="stylesheet" href="../assets/css/template.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="care-page">
+<!-- ============ SIDEBAR ============ -->
+<aside class="sidebar">
+  <a href="calendar.html" class="sidebar-logo">
+    <img src="../assets/CAREPULSE LOGO.png" alt="CarePulse logo">
+    <div>
+      <span class="logo-title">CarePulse</span>
+      <span class="logo-sub">Clinical Card</span>
+    </div>
+  </a>
+
+  <a href="profile.html" class="user-card">
+    <div class="user-avatar" id="userInitial">–</div>
+    <div class="user-meta">
+      <span class="user-name" id="userName">—</span>
+      <span class="user-role" id="userRole">—</span>
+    </div>
+    <span class="user-chevron">›</span>
+  </a>
+
+  <button class="btn-flare" type="button">
+    <span aria-hidden="true">⚠</span> Log Acute Flare
+  </button>
+
+  <nav class="sidebar-nav" aria-label="Main navigation">
+    <a href="dailylog.html"   class="nav-item"><span>📝</span> Daily Logger</a>
+    <a href="calendar.html"   class="nav-item"><span>📅</span> Calendar &amp; Tasks</a>
+    <a href="analytics.html"  class="nav-item"><span>📈</span> Analytics &amp; Trends</a>
+    <a href="docreport.html"  class="nav-item"><span>📄</span> Doctor Report</a>
+    <a href="datapriv.html"   class="nav-item"><span>🔒</span> Data &amp; Privacy</a>
+    <a href="profile.html"    class="nav-item"><span>⚙️</span> Profile Setup</a>
+  </nav>
+
+  <div class="local-mode">
+    <div class="local-mode-label"><span class="dot"></span> Local Care Mode</div>
+    <p id="localModeText">Recording locally</p>
+  </div>
+</aside>
+
+<!-- ============ TOPBAR ============ -->
+<header class="topbar">
+  <div class="topbar-left">
+    <span class="status-pill"><span class="dot"></span> Active Monitoring</span>
+    <span class="topbar-divider"></span>
+    <span class="next-appt" id="nextAppt">No appointment set</span>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-avatar" id="topInitial">–</div>
+    <div class="topbar-meta">
+      <span id="topRole">—</span>
+      <span class="topbar-sub" id="topMode">Mode</span>
+    </div>
+  </div>
+</header>
+
+<main class="content">
+  <div class="logger-toolbar">
+    <div class="toolbar-left">
+      <input
+        class="date-input"
+        type="date"
+        aria-label="Log date"
+      >
+      <span class="caregiver-note">♢ &nbsp; No patient selected</span>
+    </div>
+    <small class="muted">
+      <span class="dot"></span>Entries will appear after saving
+    </small>
+  </div>
+
+  <div class="logger-grid">
+    <form id="daily-log-form">
+      <section class="card">
+        <div class="eyebrow">METRIC 01 • CLINICAL INTENSITY</div>
+        <div class="card-head">
+          <h2>Overall Flare<br>Severity</h2>
+          <span class="tag">NRS Numeric Scale</span>
+        </div>
+
+        <div class="notice">
+          <span>⚠</span>
+          <div>
+            <strong>Select a severity level</strong>
+            <p>
+              Choose the number that best reflects today's overall
+              symptoms.
+            </p>
+          </div>
+        </div>
+
+        <div class="scale-labels">
+          <span>1 • Low</span>
+          <span>5 • Moderate Interference</span>
+          <span>10 • Emergency</span>
+        </div>
+
+        <div class="severity-scale">
+          <label><input type="radio" name="severity" value="1"><span>1</span></label>
+          <label><input type="radio" name="severity" value="2"><span>2</span></label>
+          <label><input type="radio" name="severity" value="3"><span>3</span></label>
+          <label><input type="radio" name="severity" value="4"><span>4</span></label>
+          <label><input type="radio" name="severity" value="5"><span>5</span></label>
+          <label><input type="radio" name="severity" value="6"><span>6</span></label>
+          <label><input type="radio" name="severity" value="7"><span>7</span></label>
+          <label><input type="radio" name="severity" value="8"><span>8</span></label>
+          <label><input type="radio" name="severity" value="9"><span>9</span></label>
+          <label><input type="radio" name="severity" value="10"><span>10</span></label>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="eyebrow">METRIC 02 • CLINICAL MARKERS</div>
+        <div class="card-head">
+          <h2>Symptoms<br>Experienced</h2>
+          <span class="tag">0 selected</span>
+        </div>
+
+        <p class="description">
+          Tap to tag symptoms felt during this reporting period.
+        </p>
+
+        <div class="chips">
+          <label>
+            <input type="checkbox" name="symptoms" value="Joint Pain">
+            <span>＋ Joint Pain</span>
+          </label>
+          <label>
+            <input type="checkbox" name="symptoms" value="Severe Fatigue">
+            <span>＋ Severe Fatigue</span>
+          </label>
+          <label>
+            <input type="checkbox" name="symptoms" value="Brain Fog">
+            <span>＋ Brain Fog</span>
+          </label>
+          <label>
+            <input type="checkbox" name="symptoms" value="Morning Stiffness">
+            <span>＋ Morning Stiffness</span>
+          </label>
+          <label>
+            <input type="checkbox" name="symptoms" value="Headache">
+            <span>＋ Headache</span>
+          </label>
+          <label>
+            <input type="checkbox" name="symptoms" value="Nausea">
+            <span>＋ Nausea</span>
+          </label>
+          <label>
+            <input type="checkbox" name="symptoms" value="Muscle Spasms">
+            <span>＋ Muscle Spasms</span>
+          </label>
+          <label>
+            <input type="checkbox" name="symptoms" value="Insomnia">
+            <span>＋ Insomnia</span>
+          </label>
+          <label>
+            <input type="checkbox" name="symptoms" value="Sensitivity to Light">
+            <span>＋ Sensitivity to Light</span>
+          </label>
+          <label>
+            <input type="checkbox" name="symptoms" value="Custom Symptom">
+            <span>＋ Custom Symptom</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="eyebrow">
+          METRIC 03 • ENVIRONMENTAL &amp; LIFESTYLE
+        </div>
+        <div class="card-head">
+          <h2>Observed Triggers</h2>
+          <span class="tag">0 selected</span>
+        </div>
+
+        <div class="trigger-grid">
+          <label class="trigger">
+            <input type="checkbox" name="triggers" value="Poor Sleep <6h">
+            <span>
+              <strong>Poor Sleep <6h</strong>
+              <small>Less than 6 hours of rest</small>
+            </span>
+          </label>
+          <label class="trigger">
+            <input type="checkbox" name="triggers" value="High Stress">
+            <span>
+              <strong>High Stress</strong>
+              <small>Elevated stress level</small>
+            </span>
+          </label>
+          <label class="trigger">
+            <input type="checkbox" name="triggers" value="Barometric Shift">
+            <span>
+              <strong>Barometric Shift</strong>
+              <small>Noticeable weather change</small>
+            </span>
+          </label>
+          <label class="trigger">
+            <input type="checkbox" name="triggers" value="Missed Meds">
+            <span>
+              <strong>Missed Meds</strong>
+              <small>Dose not taken on schedule</small>
+            </span>
+          </label>
+          <label class="trigger">
+            <input type="checkbox" name="triggers" value="Overexertion">
+            <span>
+              <strong>Overexertion</strong>
+              <small>More activity than usual</small>
+            </span>
+          </label>
+          <label class="trigger">
+            <input type="checkbox" name="triggers" value="Dietary Irregularity">
+            <span>
+              <strong>Dietary Irregularity</strong>
+              <small>Meal or hydration change</small>
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="eyebrow">
+          CLINICAL OBSERVATIONS &amp; INTERVENTIONS
+        </div>
+        <h2>Medication &amp; Notes</h2>
+
+        <label class="field-label" for="medication">Medication intake</label>
+        <input
+          id="medication"
+          name="medication"
+          class="field"
+          placeholder="Medication, dose and time (optional)"
+        >
+
+        <label class="field-label" for="notes">Additional notes</label>
+        <textarea
+          id="notes"
+          name="notes"
+          class="field notes"
+          placeholder="Add patient or caregiver observations..."
+        ></textarea>
+
+        <div class="radio-row">
+          <strong>Recorded by</strong>
+          <label>
+            <input type="radio" name="recorded_by" value="patient">
+            Patient
+          </label>
+          <label>
+            <input type="radio" name="recorded_by" value="caregiver">
+            Caregiver
+          </label>
+        </div>
+      </section>
+    </form>
+
+    <aside>
+      <section class="card aside-card">
+        <div class="profile-line">
+          <span class="avatar">—</span>
+          <div>
+            <strong>Patient not set</strong>
+            <small class="muted">Local patient profile</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="card aside-card">
+        <div class="eyebrow">LOCAL RECORD</div>
+        <h3>Daily Symptom Entry</h3>
+        <p>Required fields: date, severity and at least one symptom.</p>
+        <button
+          class="primary wide"
+          type="submit"
+          form="daily-log-form"
+        >
+          ▤ &nbsp; Save Daily Log
+        </button>
+      </section>
+
+      <section class="card aside-card">
+        <h3 style="color: var(--teal)">♢ &nbsp; Local Care Reminder</h3>
+        <p>
+          CarePulse is an educational tracking tool and does not provide
+          medical diagnosis. Seek professional care for urgent symptoms.
+        </p>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<script src="../assets/js/template.js"></script>
+
+</body>
+</html>
