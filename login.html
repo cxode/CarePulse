@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CarePulse | Welcome</title>
+
+    <link rel="stylesheet" href="assets\css\style.css">
+</head>
+
+<body>
+
+    <div class="app-shell">
+
+        <!-- HEADER -->
+        <header class="topbar">
+
+            <a href="login.html" class="brand">
+
+                <img
+                    src="assets/CAREPULSE LOGO.png"
+                    alt="CarePulse Logo"
+                    class="brand-logo"
+                >
+
+                <span>CarePulse</span>
+
+            </a>
+
+            <div class="privacy-label">
+                ♧ LOCAL-ONLY CARE ENVIRONMENT
+            </div>
+
+        </header>
+
+
+        <!-- LOGIN CONTENT -->
+        <main class="welcome-screen">
+
+            <div class="welcome-card">
+
+                <div class="welcome-logo">
+                    <img
+                        src="assets/CAREPULSE LOGO.png"
+                        alt="CarePulse"
+                    >
+                </div>
+
+                <p class="eyebrow">
+                    LOCAL-FIRST • PRIVATE BY DESIGN
+                </p>
+
+                <h1>Welcome</h1>
+
+                <p class="subtitle">
+                    Select your access mode to enter the chronic care portal.
+                </p>
+
+
+                <!-- ACCESS OPTIONS -->
+                <div class="access-options">
+
+                    <button
+                        class="access-button caregiver-button"
+                        data-role="Caregiver"
+                        type="button"
+                    >
+
+                        <span class="access-icon">♧</span>
+
+                        <span class="access-copy">
+                            <strong>Log as Caregiver</strong>
+
+                            <small>
+                                Record daily care on behalf of a selected patient
+                            </small>
+                        </span>
+
+                        <span class="mode-tag">LOCAL MODE</span>
+
+                        <span class="chevron">›</span>
+
+                    </button>
+
+
+                    <button
+                        class="access-button patient-button"
+                        data-role="Patient"
+                        type="button"
+                    >
+
+                        <span class="access-icon">♙</span>
+
+                        <span class="access-copy">
+                            <strong>Log as Patient</strong>
+
+                            <small>
+                                Track personal symptoms, trends and flare history
+                            </small>
+                        </span>
+
+                        <span class="self-tag">SELF-MANAGED</span>
+
+                        <span class="chevron">›</span>
+
+                    </button>
+
+                </div>
+
+
+                <!-- PROFILE STATUS -->
+                <div class="setup-area">
+
+                    <p class="section-kicker">
+                        LOCAL PROFILE SETUP
+                    </p>
+
+                    <p class="empty-state" id="profileStatus">
+                        No patient profiles saved on this device.
+                    </p>
+
+                </div>
+
+
+                <p class="small-privacy">
+                    ♧ Passwordless local prototype • Data stays in this browser
+                </p>
+
+            </div>
+
+
+            <!-- STORAGE STATUS -->
+            <div class="storage-pill">
+
+                <span class="status-dot"></span>
+
+                Local storage ready
+
+                <span>/ OFFLINE CAPABLE</span>
+
+            </div>
+
+        </main>
+
+
+        <!-- FOOTER -->
+        <footer class="footer">
+
+            <span>
+                <i></i>
+                Educational clinical tracking prototype
+            </span>
+
+            <span>
+                Privacy Notice &nbsp; Local Data Assistance
+            </span>
+
+        </footer>
+
+    </div>
+
+
+    <script src="assets\js\script.js"></script>
+
+</body>
+</html>

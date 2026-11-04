@@ -1,0 +1,444 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CarePulse | Create Profile</title>
+
+    <link rel="stylesheet" href="assets\css\create-profile.css">
+</head>
+
+<body>
+
+    <div class="app-shell">
+
+        <!-- HEADER -->
+        <header class="topbar">
+
+            <a href="login.html" class="brand">
+                <img
+                    src="assets\CAREPULSE LOGO.png"
+                    alt="CarePulse Logo"
+                    class="brand-logo"
+                >
+
+                <span>CarePulse</span>
+            </a>
+
+            <div class="privacy-label">
+                ♧ LOCAL-ONLY CARE ENVIRONMENT
+            </div>
+
+        </header>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="profile-page">
+
+            <!-- PAGE INTRODUCTION -->
+            <div class="page-heading">
+
+                <a href="login.html" class="back-link">
+                    ← Back to Welcome
+                </a>
+
+                <p class="eyebrow">GETTING STARTED</p>
+
+                <h1>Create a Patient Profile</h1>
+
+                <p class="page-subtitle">
+                    Set up a local profile to begin tracking symptoms,
+                    medication history, and daily health experiences.
+                </p>
+
+            </div>
+
+
+            <!-- PROFILE CONTENT -->
+            <div class="profile-layout">
+
+                <!-- LEFT INFORMATION PANEL -->
+                <aside class="info-panel">
+
+                    <div class="info-logo">
+                        <img
+                            src="assets\CAREPULSE LOGO.png"
+                            alt="CarePulse Logo"
+                        >
+                    </div>
+
+                    <p class="info-label">PATIENT-FIRST TRACKING</p>
+
+                    <h2>Your health journey, organized in one place.</h2>
+
+                    <p class="info-description">
+                        CarePulse helps patients document symptoms,
+                        monitor flare-ups, and prepare useful health
+                        information for medical consultations.
+                    </p>
+
+
+                    <div class="info-feature">
+
+                        <span class="feature-icon">♡</span>
+
+                        <div>
+                            <strong>Self-managed</strong>
+
+                            <p>
+                                Patients can record and monitor
+                                their own health experiences.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-feature">
+
+                        <span class="feature-icon">♧</span>
+
+                        <div>
+                            <strong>Caregiver-assisted</strong>
+
+                            <p>
+                                Caregivers can document symptoms
+                                and daily care on behalf of a patient.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="privacy-note">
+
+                        <span>♧</span>
+
+                        <p>
+                            Your profile is stored locally in this
+                            browser. No online account is required.
+                        </p>
+
+                    </div>
+
+                </aside>
+
+
+                <!-- RIGHT FORM PANEL -->
+                <section class="form-panel">
+
+                    <div class="form-heading">
+
+                        <div>
+                            <p class="section-kicker">
+                                PROFILE INFORMATION
+                            </p>
+
+                            <h2>Patient Details</h2>
+
+                            <p>
+                                Enter the patient's basic information below.
+                            </p>
+                        </div>
+
+                        <span class="required-note">
+                            * Required fields
+                        </span>
+
+                    </div>
+
+
+                    <form id="profileForm">
+
+                        <!-- PATIENT INFORMATION -->
+                        <div class="form-section">
+
+                            <h3>Basic Information</h3>
+
+
+                            <!-- PATIENT FULL NAME -->
+                            <div class="form-group">
+
+                                <label for="patientName">
+                                    Patient's Full Name <span>*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="patientName"
+                                    name="patientName"
+                                    placeholder="Enter first and last name"
+                                    autocomplete="name"
+                                    maxlength="100"
+                                    required
+                                >
+
+                                <small>
+                                    Enter the patient's complete name,
+                                    including first and last name.
+                                </small>
+
+                            </div>
+
+
+                            <!-- BIRTH DATE AND SEX -->
+                            <div class="form-row">
+
+                                <div class="form-group">
+
+                                    <label for="birthDate">
+                                        Date of Birth <span>*</span>
+                                    </label>
+
+                                    <input
+                                        type="date"
+                                        id="birthDate"
+                                        name="birthDate"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <label for="gender">
+                                        Sex
+                                    </label>
+
+                                    <select id="gender" name="gender">
+
+                                        <option value="">
+                                            Select
+                                        </option>
+
+                                        <option value="Female">
+                                            Female
+                                        </option>
+
+                                        <option value="Male">
+                                            Male
+                                        </option>
+
+                                        <option value="Prefer not to say">
+                                            Prefer not to say
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- CONDITION -->
+                            <div class="form-group">
+
+                                <label for="condition">
+                                    Chronic Condition / Health Concern
+                                    <span>*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="condition"
+                                    name="condition"
+                                    placeholder="e.g. Asthma, Migraine, Arthritis"
+                                    maxlength="150"
+                                    required
+                                >
+
+                                <small>
+                                    Enter the condition the patient wants to track.
+                                </small>
+
+                            </div>
+
+
+                            <!-- ADDITIONAL NOTES -->
+                            <div class="form-group">
+
+                                <label for="additionalNotes">
+                                    Additional Notes
+                                </label>
+
+                                <textarea
+                                    id="additionalNotes"
+                                    name="additionalNotes"
+                                    rows="3"
+                                    placeholder="Optional information about the patient's health..."
+                                ></textarea>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- CAREGIVER INFORMATION -->
+                        <div
+                            class="form-section caregiver-section"
+                            id="caregiverSection"
+                        >
+
+                            <div class="section-title-row">
+
+                                <div>
+                                    <h3>Caregiver Information</h3>
+
+                                    <p>
+                                        Tell us who is creating this profile.
+                                    </p>
+                                </div>
+
+                                <span class="optional-tag">
+                                    CAREGIVER
+                                </span>
+
+                            </div>
+
+
+                            <!-- CAREGIVER NAME -->
+                            <div class="form-group">
+
+                                <label for="caregiverName">
+                                    Caregiver's Full Name <span>*</span>
+                                </label>
+
+                                <input type="text"  id="caregiverName" name="caregiverName"  placeholder="Enter first and last name"
+                                    autocomplete="name"
+                                    maxlength="100"
+                                >
+
+                                <small>
+                                    Enter the caregiver's complete name,
+                                    including first and last name.
+                                </small>
+
+                            </div>
+
+
+                            <!-- RELATIONSHIP -->
+                            <div class="form-group">
+
+                                <label for="relationship">
+                                    Relationship to Patient <span>*</span>
+                                </label>
+
+                                <select
+                                    id="relationship"
+                                    name="relationship"
+                                >
+
+                                    <option value="">
+                                        Select relationship
+                                    </option>
+
+                                    <option value="Parent">
+                                        Parent
+                                    </option>
+
+                                    <option value="Child">
+                                        Child
+                                    </option>
+
+                                    <option value="Spouse">
+                                        Spouse
+                                    </option>
+
+                                    <option value="Sibling">
+                                        Sibling
+                                    </option>
+
+                                    <option value="Grandparent">
+                                        Grandparent
+                                    </option>
+
+                                    <option value="Grandchild">
+                                        Grandchild
+                                    </option>
+
+                                    <option value="Aunt/Uncle">
+                                        Aunt / Uncle
+                                    </option>
+
+                                    <option value="Niece/Nephew">
+                                        Niece / Nephew
+                                    </option>
+
+                                    <option value="Relative">
+                                        Relative
+                                    </option>
+
+                                    <option value="Legal Guardian">
+                                        Legal Guardian
+                                    </option>
+
+                                    <option value="Professional Caregiver">
+                                        Professional Caregiver
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- FORM NOTICE -->
+                        <div class="form-notice">
+
+                            <span>ⓘ</span>
+
+                            <p>
+                                This is an educational tracking prototype.
+                                Information is saved in this browser only.
+                            </p>
+
+                        </div>
+
+
+                        <!-- ACTION BUTTONS -->
+                        <div class="form-actions">
+
+                            <a href="login.html" class="cancel-button">
+                                Cancel
+                            </a>
+
+                            <button type="submit" class="save-button">
+                                Create Profile <span>→</span>
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </section>
+
+            </div>
+
+        </main>
+
+
+        <footer class="footer">
+
+            <span>
+                <i></i>
+                Educational clinical tracking prototype
+            </span>
+
+            <span>
+                Privacy Notice &nbsp; Local Data Assistance
+            </span>
+
+        </footer>
+
+    </div>
+
+
+    <script src="assets\js\create-profile.js"></script>
+
+</body>
+</html>
