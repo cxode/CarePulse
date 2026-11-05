@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f9fafb" />
+  <title>Profile Setup &middot; CarePulse</title>
+  <link rel="stylesheet" href="../assets/css/template.css" />
+  <link rel="stylesheet" href="../assets/css/profile.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <a href="calendar.html" class="sidebar-logo">
+      <img src="../assets/CAREPULSE LOGO.png" alt="" />
+      <div>
+        <span class="logo-title">CarePulse</span>
+        <span class="logo-sub">Clinical Care</span>
+      </div>
+    </a>
+
+    <a href="profile.html" class="user-card">
+      <div class="user-avatar" id="userInitial">–</div>
+      <div class="user-meta">
+        <span class="user-name" id="userName">—</span>
+        <span class="user-role" id="userRole">—</span>
+      </div>
+      <span class="user-chevron" aria-hidden="true">›</span>
+    </a>
+
+    <button class="btn-flare" type="button">
+      <span aria-hidden="true">⚠</span> Log Acute Flare
+    </button>
+
+    <nav class="sidebar-nav" aria-label="Main navigation">
+      <a href="dailylog.html" class="nav-item"><span aria-hidden="true">📝</span> Daily Logger</a>
+      <a href="calendar.html" class="nav-item"><span aria-hidden="true">📅</span> Calendar &amp; Tasks</a>
+      <a href="analytics.html" class="nav-item"><span aria-hidden="true">📈</span> Analytics &amp; Trends</a>
+      <a href="docreport.html" class="nav-item"><span aria-hidden="true">📄</span> Doctor Report</a>
+      <a href="datapriv.html" class="nav-item"><span aria-hidden="true">🔒</span> Data &amp; Privacy</a>
+      <a href="profile.html" class="nav-item"><span aria-hidden="true">⚙️</span> Profile Setup</a>
+    </nav>
+
+    <div class="local-mode">
+      <div class="local-mode-label"><span class="dot"></span> Local Care Mode</div>
+      <p id="localModeText">Recording locally</p>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="status-pill"><span class="dot"></span> Active Monitoring</span>
+      <span class="topbar-divider"></span>
+      <span class="next-appt" id="nextAppt">No appointment set</span>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-meta">
+        <span id="topRole">—</span>
+        <span class="topbar-sub" id="topMode">Mode</span>
+      </div>
+      <div class="topbar-avatar" id="topInitial">–</div>
+      <button class="btn-logout" id="logoutBtn" type="button">
+        <span aria-hidden="true">⏻</span> Logout
+      </button>
+    </div>
+  </header>
+
+  <main class="profile-main">
+    <div class="page-head">
+      <div class="eyebrow">Local profile configuration</div>
+      <h1 class="page-title">Profile Configuration &amp; Caregiver Mode</h1>
+      <p class="page-description">Set up local patient and caregiver details. All information remains in this browser.</p>
+    </div>
+
+    <div class="profile-layout">
+      <aside class="profile-intro">
+        <div class="intro-hero">
+          <span class="private-badge">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3 19 6v5c0 4.7-3 8-7 10-4-2-7-5.3-7-10V6l7-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Local &amp; Private Mode
+          </span>
+          <div class="intro-headline">
+            <div class="intro-eyebrow">Collaborative care</div>
+            <h2>Patient-First Symptom Tracking</h2>
+          </div>
+        </div>
+        <div class="intro-content">
+          <p>Record day-to-day symptoms, medication progress and personal observations without remote access or account sharing.</p>
+          <div class="mode-cards">
+            <div class="mode-card">
+              <strong>Caregiver Mode</strong>
+              <span>Records are clearly attributed</span>
+            </div>
+            <div class="mode-card">
+              <strong>Self-Managed</strong>
+              <span>Patient controls local records</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="profile-form-card" aria-label="Profile details">
+        <form id="profileForm">
+          <section class="form-section" aria-labelledby="patientSectionTitle">
+            <div class="section-heading">
+              <div class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="8" r="3.3" stroke="currentColor" stroke-width="1.7"/>
+                  <path d="M5.5 20v-1.6a6.5 6.5 0 0 1 13 0V20" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                </svg>
+                <h2 id="patientSectionTitle">Patient Profile</h2>
+              </div>
+              <span class="section-tag">Local identity</span>
+            </div>
+
+            <div class="form-field">
+              <label for="patientName">Patient Full Name</label>
+              <input id="patientName" name="patientName" type="text" autocomplete="name" maxlength="100" placeholder="Enter patient's full name" required />
+            </div>
+            <div class="form-field">
+              <label for="birthDate">Date of Birth</label>
+              <input id="birthDate" name="birthDate" type="date" required />
+            </div>
+            <div class="form-field">
+              <label for="condition">Diagnosed Conditions <span class="label-hint">(separate with commas)</span></label>
+              <input id="condition" name="condition" type="text" maxlength="300" placeholder="e.g. Fibromyalgia, Rheumatoid Arthritis" required />
+            </div>
+          </section>
+
+          <div id="additionalPatients" class="additional-patients"></div>
+          <template id="patientTemplate">
+            <section class="form-section additional-patient" data-patient-card>
+              <div class="section-heading">
+                <div class="section-title">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="8" r="3.3" stroke="currentColor" stroke-width="1.7"/>
+                    <path d="M5.5 20v-1.6a6.5 6.5 0 0 1 13 0V20" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                  </svg>
+                  <h2>Additional Patient</h2>
+                </div>
+                <button class="remove-patient" type="button" data-remove-patient aria-label="Remove this patient">Remove</button>
+              </div>
+              <div class="form-field">
+                <label>Patient Full Name</label>
+                <input data-patient-name type="text" maxlength="100" placeholder="Enter patient's full name" required />
+              </div>
+              <div class="form-field">
+                <label>Date of Birth</label>
+                <input data-patient-birth-date type="date" required />
+              </div>
+              <div class="form-field">
+                <label>Diagnosed Conditions <span class="label-hint">(separate with commas)</span></label>
+                <input data-patient-condition type="text" maxlength="300" placeholder="e.g. Fibromyalgia, Rheumatoid Arthritis" required />
+              </div>
+            </section>
+          </template>
+
+          <section class="form-section caregiver-section" id="caregiverSection" aria-labelledby="caregiverSectionTitle">
+            <div class="section-heading">
+              <div class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="9" cy="8" r="2.8" stroke="currentColor" stroke-width="1.7"/>
+                  <path d="M3.5 19v-1.3a5.5 5.5 0 0 1 11 0V19M17 7.5a2.5 2.5 0 0 1 0 4.9m1.3 2.4a4.5 4.5 0 0 1 2.2 3.9V19" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                </svg>
+                <h2 id="caregiverSectionTitle">Caregiver Information</h2>
+              </div>
+              <span class="section-tag">Optional local mode</span>
+            </div>
+            <div class="form-field">
+              <label for="caregiverName">Caregiver Name</label>
+              <input id="caregiverName" name="caregiverName" type="text" autocomplete="name" maxlength="100" placeholder="Enter caregiver name" />
+            </div>
+            <div class="form-field">
+              <label for="relationship">Relationship to Patient</label>
+              <select id="relationship" name="relationship">
+                <option value="">Select relationship</option>
+                <option>Parent</option>
+                <option>Child</option>
+                <option>Spouse</option>
+                <option>Sibling</option>
+                <option>Grandparent</option>
+                <option>Grandchild</option>
+                <option>Aunt/Uncle</option>
+                <option>Niece/Nephew</option>
+                <option>Relative</option>
+                <option>Legal Guardian</option>
+                <option>Professional Caregiver</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </section>
+
+          <div class="privacy-notice">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3 19 6v5c0 4.7-3 8-7 10-4-2-7-5.3-7-10V6l7-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="M12 10v4m0 3h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            <div>
+              <strong>On-Device Privacy &amp; Local Storage</strong>
+              <p>This educational prototype stores profile and care records only in this browser. Use fictional or demonstration data.</p>
+            </div>
+          </div>
+
+          <p id="profileFeedback" class="profile-feedback" role="status" aria-live="polite"></p>
+          <div class="form-actions">
+            <button class="add-patient-button" id="addPatientBtn" type="button">
+              <span aria-hidden="true">＋</span> Add Another Patient
+            </button>
+            <button class="save-profile-button" type="submit">
+              Save Profile &amp; Start Logging <span aria-hidden="true">›</span>
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script src="../assets/js/template.js"></script>
+  <script src="../assets/js/profile.js"></script>
+</body>
+</html>
