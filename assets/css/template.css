@@ -121,7 +121,7 @@ main     { grid-area: main; padding: 24px; }
   align-items: center; 
   justify-content: space-between;
   padding: 0 24px;
-  min-height: 64px; /* Ensures consistent height */
+  min-height: 64px;
   border-bottom: 1px solid var(--cp-line);
   background: #fff;
 }
@@ -131,18 +131,17 @@ main     { grid-area: main; padding: 24px; }
 .topbar-divider { width: 1px; height: 16px; background: var(--cp-line); }
 .next-appt    { font-size: 12px; color: var(--cp-muted); }
 
-/* --- RIGHT SIDE FIXES --- */
 .topbar-right { 
   display: flex; 
   align-items: center; 
   gap: 16px; 
-  margin-left: auto; /* THIS is the magic line that pushes it to the right */
+  margin-left: auto;
 }
 
 .topbar-meta  { 
   display: flex; 
   flex-direction: column; 
-  align-items: flex-end; /* Aligns text to the right */
+  align-items: flex-end;
   line-height: 1.3; 
 }
 .topbar-meta span:first-child { font-size: 13px; font-weight: 700; color: var(--cp-text); }
@@ -185,3 +184,81 @@ main     { grid-area: main; padding: 24px; }
 .btn-logout:hover span {
   color: #dc2626;
 }
+
+/* =========================================
+   CUSTOM MODAL / ALERT
+   ========================================= */
+.cp-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.cp-modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cp-modal-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(10px);
+  transition: transform 0.2s ease;
+}
+
+.cp-modal-overlay.active .cp-modal-box {
+  transform: translateY(0);
+}
+
+.cp-modal-title {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--cp-text);
+}
+
+.cp-modal-message {
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: var(--cp-muted);
+  line-height: 1.5;
+}
+
+.cp-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cp-modal-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s ease;
+}
+
+.cp-modal-btn.cancel {
+  background: #f3f4f6;
+  color: var(--cp-text);
+}
+.cp-modal-btn.cancel:hover { background: #e5e7eb; }
+
+.cp-modal-btn.confirm {
+  background: var(--cp-accent);
+  color: #fff;
+}
+.cp-modal-btn.confirm:hover { filter: brightness(1.1); }

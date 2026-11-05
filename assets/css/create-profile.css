@@ -632,3 +632,89 @@ body {
     }
 
 }
+/* =========================================
+   CUSTOM MODAL (Added for Create Profile)
+   ========================================= */
+.cp-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.4); /* Dark overlay */
+  display: flex;
+  align-items: center; 
+  justify-content: center; 
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.cp-modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cp-modal-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(10px);
+  transition: transform 0.2s ease;
+}
+
+.cp-modal-overlay.active .cp-modal-box {
+  transform: translateY(0);
+}
+
+.cp-modal-title {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--cp-text, #1f2937);
+}
+
+.cp-modal-message {
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: var(--cp-muted, #6b7280);
+  line-height: 1.5;
+}
+
+.cp-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cp-modal-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s ease;
+}
+
+.cp-modal-btn.cancel {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+.cp-modal-btn.cancel:hover { background: #e5e7eb; }
+
+.cp-modal-btn.confirm {
+  background: #0f766e;
+  color: #fff;
+}
+.cp-modal-btn.confirm:hover { filter: brightness(1.1); }
+/* Ensures the caregiver section is hidden by default */
+.caregiver-section {
+    display: none;
+}
+
+/* Makes the caregiver section appear when the JS adds the 'visible' class */
+.caregiver-section.visible {
+    display: block; /* Or display: flex; depending on your form layout */
+}

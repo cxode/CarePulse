@@ -1,27 +1,32 @@
 /* =========================================
-   CAREPULSE TEMPLATE (Sidebar, Topbar, Logout)
+   CAREPULSE TEMPLATE
    ========================================= */
 
-// ---- simple fallback variables ----
 const FALLBACK_MODE = "";        
 const FALLBACK_NEXT = "No appointment set";
 
-// 1) read profile from localStorage (safe)
+// Read the ACTIVE profile based on who is logged in
 function readProfile() {
   try {
-    return JSON.parse(localStorage.getItem("carepulse:profile")) || {};
+    const allProfiles = JSON.parse(localStorage.getItem("carepulse:profiles")) || {};
+    const activeRole = sessionStorage.getItem("carepulse:activeRole");
+    
+    // If we have an active role and a profile for it, return that specific profile
+    if (activeRole && allProfiles[activeRole]) {
+        return allProfiles[activeRole];
+    }
+    return {};
   } catch {
     return {};
   }
 }
 
-// 2) hydrate the sidebar + topbar
 function hydrateShell() {
   const p = readProfile();
 
   const name = p.name || "—";
   const role = p.role || "—";
-  const mode = FALLBACK_MODE || (p.role === "Caregiver"
+  const mode = FALLBACK_MODE || (role === "Caregiver"
                 ? "Caregiver recording locally"
                 : "Patient recording locally");
                 
@@ -43,13 +48,11 @@ function hydrateShell() {
   setText("topMode",     mode);
 }
 
-// 3) tiny helper
 function setText(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value;
 }
 
-// 4) auto-highlight the current nav item
 function markActiveNav() {
   const current = location.pathname.split("/").pop() || "calendar.html";
   document.querySelectorAll(".nav-item").forEach(a => {
@@ -58,40 +61,77 @@ function markActiveNav() {
   });
 }
 
-// 5) Page guard — bounce to create-profile if no profile
 function requireProfile() {
-  const p = readProfile();
+  const isLoggedIn = sessionStorage.getItem("carepulse:loggedIn");
+  const activeRole = sessionStorage.getItem("carepulse:activeRole");
   const currentPage = location.pathname.split("/").pop();
 
-  if (!p.name && currentPage !== "create-profile.html") {
-    location.replace("../create-profile.html");
+  // Guard against missing session
+  if ((!isLoggedIn || !activeRole) && currentPage !== "create-profile.html" && currentPage !== "login.html") {
+    location.replace("../login.html"); 
   }
 }
 
-// 6) Logout logic
+function showCustomModal(title, message, showCancel = false) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement("div");
+    overlay.className = "cp-modal-overlay";
+    const box = document.createElement("div");
+    box.className = "cp-modal-box";
+    const h2 = document.createElement("h2");
+    h2.className = "cp-modal-title"; h2.textContent = title;
+    const p = document.createElement("p");
+    p.className = "cp-modal-message"; p.textContent = message;
+    const actions = document.createElement("div");
+    actions.className = "cp-modal-actions";
+
+    if (showCancel) {
+      const cancelBtn = document.createElement("button");
+      cancelBtn.className = "cp-modal-btn cancel"; cancelBtn.textContent = "Cancel";
+      cancelBtn.onclick = () => { close(); resolve(false); };
+      actions.appendChild(cancelBtn);
+    }
+
+    const confirmBtn = document.createElement("button");
+    confirmBtn.className = "cp-modal-btn confirm";
+    confirmBtn.textContent = showCancel ? "OK" : "Got it";
+    confirmBtn.onclick = () => { close(); resolve(true); };
+    actions.appendChild(confirmBtn);
+
+    box.appendChild(h2); box.appendChild(p); box.appendChild(actions);
+    overlay.appendChild(box); document.body.appendChild(overlay);
+    setTimeout(() => overlay.classList.add("active"), 10);
+
+    function close() {
+      overlay.classList.remove("active");
+      setTimeout(() => overlay.remove(), 200);
+    }
+  });
+}
+
 function setupLogout() {
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      // 1. Ask for confirmation (optional, but good practice)
-      if (confirm("Are you sure you want to log out? Your locally saved data will remain on this device.")) {
-        // 2. Remove the active session/profile key
-        localStorage.removeItem("carepulse:profile");
-        
-        // 3. Clear session storage just in case
-        sessionStorage.clear();
-        
-        // 4. Redirect back to login page (adjust path if necessary)
+    logoutBtn.addEventListener("click", async () => {
+      const isConfirmed = await showCustomModal(
+        "Confirm Logout", 
+        "Are you sure you want to log out? Your health data will remain securely saved on this device.", 
+        true
+      );
+
+      if (isConfirmed) {
+        // Clear only the ACTIVE session, leave the saved profiles alone
+        sessionStorage.removeItem("carepulse:loggedIn");
+        sessionStorage.removeItem("carepulse:activeRole");
         window.location.href = "../login.html"; 
       }
     });
   }
 }
 
-// run on page load
 document.addEventListener("DOMContentLoaded", () => {
   requireProfile(); 
   hydrateShell();   
   markActiveNav();
-  setupLogout(); // Initialize the logout button
+  setupLogout();
 });
