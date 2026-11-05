@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f9fafb" />
+  <title>Data &amp; Privacy &middot; CarePulse</title>
+  <link rel="stylesheet" href="../assets/css/template.css" />
+  <link rel="stylesheet" href="../assets/css/datapriv.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <a href="calendar.html" class="sidebar-logo">
+      <img src="../assets/CAREPULSE LOGO.png" alt="" />
+      <div>
+        <span class="logo-title">CarePulse</span>
+        <span class="logo-sub">Clinical Care</span>
+      </div>
+    </a>
+
+    <a href="profile.html" class="user-card">
+      <div class="user-avatar" id="userInitial">–</div>
+      <div class="user-meta">
+        <span class="user-name" id="userName">—</span>
+        <span class="user-role" id="userRole">—</span>
+      </div>
+      <span class="user-chevron" aria-hidden="true">›</span>
+    </a>
+
+    <button class="btn-flare" type="button">
+      <span aria-hidden="true">⚠</span> Log Acute Flare
+    </button>
+
+    <nav class="sidebar-nav" aria-label="Main navigation">
+      <a href="dailylog.html" class="nav-item"><span aria-hidden="true">📝</span> Daily Logger</a>
+      <a href="calendar.html" class="nav-item"><span aria-hidden="true">📅</span> Calendar &amp; Tasks</a>
+      <a href="analytics.html" class="nav-item"><span aria-hidden="true">📈</span> Analytics &amp; Trends</a>
+      <a href="docreport.html" class="nav-item"><span aria-hidden="true">📄</span> Doctor Report</a>
+      <a href="datapriv.html" class="nav-item"><span aria-hidden="true">🔒</span> Data &amp; Privacy</a>
+      <a href="profile.html" class="nav-item"><span aria-hidden="true">⚙️</span> Profile Setup</a>
+    </nav>
+
+    <div class="local-mode">
+      <div class="local-mode-label"><span class="dot"></span> Local Care Mode</div>
+      <p id="localModeText">Recording locally</p>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="status-pill"><span class="dot"></span> Active Monitoring</span>
+      <span class="topbar-divider"></span>
+      <span class="next-appt" id="nextAppt">No appointment set</span>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-meta">
+        <span id="topRole">—</span>
+        <span class="topbar-sub" id="topMode">Mode</span>
+      </div>
+      <div class="topbar-avatar" id="topInitial">–</div>
+      <button class="btn-logout" id="logoutBtn" type="button">
+        <span aria-hidden="true">⏻</span> Logout
+      </button>
+    </div>
+  </header>
+
+  <main class="privacy-main">
+    <div class="page-head">
+      <div class="eyebrow">Local data sandbox</div>
+      <h1 class="page-title">Data &amp; Privacy</h1>
+      <p class="page-description">CarePulse uses browser storage only. No records are uploaded or shared across devices.</p>
+    </div>
+
+    <div class="privacy-grid">
+      <section class="privacy-card storage-card" aria-labelledby="storageTitle">
+        <div class="storage-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 3 19 6v5c0 4.7-3 8-7 10-4-2-7-5.3-7-10V6l7-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 id="storageTitle">On-Device Storage</h2>
+        <p class="card-copy">Profiles, symptom entries and medication records remain in this browser’s local storage. There is no account, cloud synchronization, remote caregiver connection or backend connection in this demo.</p>
+        <ul class="privacy-points">
+          <li><span aria-hidden="true">✓</span> Works offline after loading</li>
+          <li><span aria-hidden="true">✓</span> No authentication tokens stored</li>
+          <li><span aria-hidden="true">✓</span> No cross-device access</li>
+          <li><span aria-hidden="true">✓</span> Records stay in this browser</li>
+        </ul>
+      </section>
+
+      <section class="privacy-card controls-card" aria-labelledby="controlsTitle">
+        <h2 id="controlsTitle">Local Data Controls</h2>
+        <p class="card-copy">Download a backup of your CarePulse data, or clear all CarePulse information from this browser.</p>
+        <div class="control-actions">
+          <button class="privacy-button" id="exportDataBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 3h7l4 4v14H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+              <path d="M14 3v5h5M9 13h5M9 17h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Export Local Data
+          </button>
+          <button class="privacy-button danger-button" id="clearDataBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 7h16M10 11v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Clear All Local Data
+          </button>
+        </div>
+        <p class="control-feedback" id="controlFeedback" role="status" aria-live="polite"></p>
+      </section>
+    </div>
+
+    <section class="privacy-card education-card" aria-labelledby="educationTitle">
+      <div class="eyebrow">Educational use</div>
+      <h2 id="educationTitle">Use fictional or demonstration data</h2>
+      <p class="card-copy">Browser local storage is not secure medical record storage. This college project is designed to demonstrate front-end care tracking functionality only.</p>
+    </section>
+  </main>
+
+  <script src="../assets/js/template.js"></script>
+  <script src="../assets/js/datapriv.js"></script>
+</body>
+</html>
