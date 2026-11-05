@@ -1,14 +1,10 @@
-/* =========================================================
-   CarePulse shared shell — no predefined user.
-   Everything comes from localStorage, with simple fallbacks.
-   ========================================================= */
+/* =========================================
+   CAREPULSE TEMPLATE (Sidebar, Topbar, Logout)
+   ========================================= */
 
-// ---- simple fallback variables (edit if you want) ----
-const FALLBACK_NAME = "";
-const FALLBACK_ROLE = "";
-const FALLBACK_MODE = "";        // e.g. "Caregiver recording locally"
+// ---- simple fallback variables ----
+const FALLBACK_MODE = "";        
 const FALLBACK_NEXT = "No appointment set";
-// -----------------------------------------------------
 
 // 1) read profile from localStorage (safe)
 function readProfile() {
@@ -23,12 +19,12 @@ function readProfile() {
 function hydrateShell() {
   const p = readProfile();
 
-  const name = p.name || FALLBACK_NAME || "—";
-  const role = p.role || FALLBACK_ROLE || "—";
-  const mode = FALLBACK_MODE
-            || (p.role === "Caregiver"
+  const name = p.name || "—";
+  const role = p.role || "—";
+  const mode = FALLBACK_MODE || (p.role === "Caregiver"
                 ? "Caregiver recording locally"
                 : "Patient recording locally");
+                
   const next = p.appointment
              ? `Next: ${new Date(p.appointment).toLocaleString([], {
                  hour: "numeric", minute: "2-digit", weekday: "short"
@@ -39,7 +35,7 @@ function hydrateShell() {
 
   setText("userInitial", initial);
   setText("userName",    name);
-  setText("userRole",    role);
+  setText("userRole",    role === "Caregiver" ? "Managed by Caregiver" : role);
   setText("localModeText", mode);
   setText("nextAppt",    next);
   setText("topInitial",  initial);
@@ -47,7 +43,7 @@ function hydrateShell() {
   setText("topMode",     mode);
 }
 
-// 3) tiny helper — keeps callers short
+// 3) tiny helper
 function setText(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value;
@@ -58,18 +54,44 @@ function markActiveNav() {
   const current = location.pathname.split("/").pop() || "calendar.html";
   document.querySelectorAll(".nav-item").forEach(a => {
     if (a.getAttribute("href") === current) a.classList.add("active");
+    else a.classList.remove("active");
   });
 }
 
-// 5) simple page guard — bounce to create-profile if no profile
+// 5) Page guard — bounce to create-profile if no profile
 function requireProfile() {
   const p = readProfile();
-  if (!p.name) location.replace("../create-profile.html");
+  const currentPage = location.pathname.split("/").pop();
+
+  if (!p.name && currentPage !== "create-profile.html") {
+    location.replace("../create-profile.html");
+  }
 }
 
-// run
+// 6) Logout logic
+function setupLogout() {
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      // 1. Ask for confirmation (optional, but good practice)
+      if (confirm("Are you sure you want to log out? Your locally saved data will remain on this device.")) {
+        // 2. Remove the active session/profile key
+        localStorage.removeItem("carepulse:profile");
+        
+        // 3. Clear session storage just in case
+        sessionStorage.clear();
+        
+        // 4. Redirect back to login page (adjust path if necessary)
+        window.location.href = "../login.html"; 
+      }
+    });
+  }
+}
+
+// run on page load
 document.addEventListener("DOMContentLoaded", () => {
-  hydrateShell();
+  requireProfile(); 
+  hydrateShell();   
   markActiveNav();
-  // requireProfile();   // uncomment when you want the guard active
+  setupLogout(); // Initialize the logout button
 });

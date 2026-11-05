@@ -64,3 +64,23 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+// Example of what your submit button should do:
+document.getElementById("your-form-id").addEventListener("submit", function(e) {
+  e.preventDefault(); // Stop page reload
+
+  // 1. Get the values from your inputs (change these IDs to match your HTML)
+  const userNameInput = document.getElementById("name").value;
+  const userRoleInput = document.getElementById("role").value; // e.g., "Patient" or "Caregiver"
+
+  // 2. Create the data object
+  const profileData = {
+    name: userNameInput,
+    role: userRoleInput
+  };
+
+  // 3. Save it to localStorage with the correct key
+  localStorage.setItem("carepulse:profile", JSON.stringify(profileData));
+
+  // 4. Redirect to the main page
+  window.location.href = "pages/dailylog.html"; 
+});
