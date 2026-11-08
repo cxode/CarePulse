@@ -4,16 +4,23 @@
 
 function hydrateShell() {
   const data = CarePulse.read();
-  const patient = { ...CarePulse.activePatient(data), role: data.role };
-  const initial = patient.name.charAt(0).toUpperCase();
+  const active = CarePulse.activePatient(data) || {}; // Safety check
+  const patient = { ...active, role: data.role || "—" };
+  
+  // Safety check for the name to prevent crashes
+  const name = patient.name || "—";
+  const initial = name !== "—" ? name.charAt(0).toUpperCase() : "–";
   const mode = `${patient.role} recording locally`;
+
   CarePulseUI.setText("userInitial", initial);
-  CarePulseUI.setText("userName", patient.name);
+  CarePulseUI.setText("userName", name);
   CarePulseUI.setText("userRole", patient.role === "Caregiver" ? "Managed by Caregiver" : patient.role);
   CarePulseUI.setText("localModeText", mode);
+  
   CarePulseUI.setText("nextAppt", patient.appointment
     ? `Next: ${new Date(patient.appointment).toLocaleString([], { hour: "numeric", minute: "2-digit", weekday: "short" })}`
     : "No appointment set");
+    
   CarePulseUI.setText("topInitial", initial);
   CarePulseUI.setText("topRole", patient.role);
   CarePulseUI.setText("topMode", mode);
@@ -61,7 +68,7 @@ function setupLogout() {
   document.getElementById("logoutBtn")?.addEventListener("click", async () => {
     if (await showCustomModal("Return to Welcome", "Your records will stay in this browser. Return to the welcome screen?", true)) {
       CarePulse.run(() => {
-        CarePulse.endSession();
+        CarePulse.endSession(); // Make sure this ONLY clears the session, not the patients array!
         location.href = "../login.html";
       });
     }
@@ -72,37 +79,45 @@ CarePulse.onReady(data => {
   hydrateShell();
   markActiveNav();
   setupLogout();
-  const controls = document.createElement("div");
-  controls.className = "patient-controls";
-  const patientLabel = CarePulseUI.element("label", "", "Active patient");
-  patientLabel.htmlFor = "activePatient";
-  const patientSelect = document.createElement("select");
-  patientSelect.id = "activePatient";
-  data.patients.forEach(patient => {
-    const option = CarePulseUI.element("option", "", patient.name);
-    option.value = patient.id;
-    patientSelect.appendChild(option);
-  });
-  const roleLabel = CarePulseUI.element("label", "", "Recording mode");
-  roleLabel.htmlFor = "activeMode";
-  const roleSelect = document.createElement("select");
-  roleSelect.id = "activeMode";
-  ["Patient", "Caregiver"].forEach(role => roleSelect.appendChild(CarePulseUI.element("option", "", role)));
-  controls.append(patientLabel, patientSelect, roleLabel, roleSelect);
-  document.querySelector(".local-mode").before(controls);
-  patientSelect.value = data.activePatientId;
-  roleSelect.value = data.role;
-  patientSelect.addEventListener("change", () => CarePulse.run(() => {
-    CarePulse.selectPatient(patientSelect.value);
-    // Remove log IDs and dates from the previous patient context.
-    location.href = CarePulse.cleanPageURL();
-  }));
-  roleSelect.addEventListener("change", () => CarePulse.run(() => {
-    CarePulse.setRole(roleSelect.value);
-    location.reload();
-  }));
+  
+  // Only build the switcher if patients exist
+  if (data.patients && data.patients.length > 0) {
+      const controls = document.createElement("div");
+      controls.className = "patient-controls";
+      const patientLabel = CarePulseUI.element("label", "", "Active patient");
+      patientLabel.htmlFor = "activePatient";
+      const patientSelect = document.createElement("select");
+      patientSelect.id = "activePatient";
+      data.patients.forEach(patient => {
+        const option = CarePulseUI.element("option", "", patient.name);
+        option.value = patient.id;
+        patientSelect.appendChild(option);
+      });
+      const roleLabel = CarePulseUI.element("label", "", "Recording mode");
+      roleLabel.htmlFor = "activeMode";
+      const roleSelect = document.createElement("select");
+      roleSelect.id = "activeMode";
+      ["Patient", "Caregiver"].forEach(role => roleSelect.appendChild(CarePulseUI.element("option", "", role)));
+      controls.append(patientLabel, patientSelect, roleLabel, roleSelect);
+      document.querySelector(".local-mode").before(controls);
+      
+      patientSelect.value = data.activePatientId;
+      roleSelect.value = data.role;
+      
+      patientSelect.addEventListener("change", () => CarePulse.run(() => {
+        CarePulse.selectPatient(patientSelect.value);
+        location.href = CarePulse.cleanPageURL();
+      }));
+      
+      roleSelect.addEventListener("change", () => CarePulse.run(() => {
+        CarePulse.setRole(roleSelect.value);
+        location.reload();
+      }));
+  }
+
   document.querySelector(".btn-flare")?.addEventListener("click", () => {
     location.href = "dailylog.html?new=1";
   });
+  
   CarePulse.onChange(hydrateShell);
 });

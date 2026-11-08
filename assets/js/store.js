@@ -87,7 +87,6 @@ const CarePulse = (() => {
     });
     const legacyLogs = Array.isArray(oldLogs) ? oldLogs : Object.entries(oldLogs).map(([date, log]) => ({ ...log, date }));
     let owner = data.patients.length === 1 ? data.patients[0] : null;
-    // Unscoped records cannot safely be attributed when several patients exist.
     if (!owner && (legacyLogs.length || oldMeds.length)) {
       owner = { id: id(), name: "Recovered Records", birthDate: "", condition: "Update this profile to identify the owner of these older records." };
       data.patients.push(owner);
@@ -103,7 +102,6 @@ const CarePulse = (() => {
       changes: [{ date: med.startDate || dateISO(), dosage: med.dosage || "", frequency: 1, schedule: med.schedule || "Daily" }]
     }));
     data.activePatientId = data.patients[0]?.id || "";
-    // Old session storage is optional; current file navigation uses local data.
     try {
       const oldRole = sessionStorage.getItem("carepulse:activeRole");
       if (roles.includes(oldRole)) data.role = oldRole;
@@ -121,7 +119,10 @@ const CarePulse = (() => {
     for (const key of ["patients", "logs", "medications"]) {
       if (!data[key].every(identity) || new Set(data[key].map(item => item.id)).size !== data[key].length) invalid();
     }
-    if (!data.patients.every(patient => typeof patient.name === "string" && patient.name.trim())) invalid();
+    
+    // FIXED: Enforce that every patient must have a valid role saved on them
+    if (!data.patients.every(patient => typeof patient.name === "string" && patient.name.trim() && roles.includes(patient.role))) invalid();
+
     const patientExists = item => data.patients.some(patient => patient.id === item.patientId);
     if (!data.logs.every(log => patientExists(log) && validDate(log.date) && Number.isInteger(log.severity) &&
       log.severity >= 1 && log.severity <= 10 && textList(log.symptoms) && textList(log.triggers) &&
@@ -170,16 +171,17 @@ const CarePulse = (() => {
   function startSession(role) {
     if (!roles.includes(role)) throw new Error("Select Patient or Caregiver mode.");
     update(data => {
-      const patient = activePatient(data) || data.patients[0];
-      if (!patient) throw new Error("Create a patient profile before logging in.");
+      // FIXED: Find a patient that matches the requested role, NOT just the first one.
+      const patient = data.patients.find(p => p.role === role);
+      if (!patient) throw new Error(`No ${role} profile found. Please create one.`);
       data.activePatientId = patient.id;
       data.role = role;
-      // Keep login state with the profile when navigating between local HTML files.
       data.loggedIn = true;
     });
   }
 
   function endSession() {
+    // This safely flips the flag without deleting the profiles array.
     update(data => { data.loggedIn = false; });
   }
 
@@ -190,6 +192,8 @@ const CarePulse = (() => {
   function savePatients(patients, activeId) {
     update(data => {
       patients.forEach(patient => {
+        // FIXED: Ensure the role is saved inside the patient object
+        patient.role = patient.role || data.role;
         validateProfile(patient, data.role);
         const index = data.patients.findIndex(item => item.id === patient.id);
         if (index < 0) data.patients.push(patient);
@@ -247,7 +251,6 @@ const CarePulse = (() => {
           throw new Error("Unmark today's doses before changing the dosage or frequency.");
         }
         existing.name = medication.name.trim();
-        // Keep earlier schedules so edits do not rewrite historical adherence.
         change.date = existing.startDate > dateISO() ? existing.startDate : dateISO();
         existing.changes = existing.changes.filter(item => item.date < change.date).concat(change);
       } else {
@@ -262,7 +265,6 @@ const CarePulse = (() => {
       const med = patientRecords("medications", data).find(item => item.id === medicationId);
       if (med && !med.endDate) {
         const end = new Date();
-        // Preserve a day's schedule when doses from it have already been recorded.
         if (data.intakes.some(intake => intake.medicationId === med.id && intake.date === dateISO())) end.setDate(end.getDate() + 1);
         med.endDate = dateISO(end);
       }
@@ -329,7 +331,6 @@ const CarePulse = (() => {
     window.addEventListener("carepulse:change", () => run(action));
   }
 
-  // One listener per page, including Welcome and profile creation.
   window.addEventListener("storage", event => {
     if (event.key === STORAGE_KEY || event.key === null) location.reload();
   });
