@@ -1,228 +1,111 @@
-/* =========================================================
-   CarePulse — Analytics & Trends
-   ========================================================= */
-
-const STORE_LOGS = "carepulse:logs";
-const STORE_MEDS = "carepulse:medications";
-const STORE_PROFILE = "carepulse:profile";
-const LOOKBACK_DAYS = 30;
-
-function safeParse(raw, fallback) {
-  try { return raw ? JSON.parse(raw) : fallback; } catch { return fallback; }
-}
-
-function getPastNDates(n) {
-  const dates = [];
-  for (let i = 0; i < n; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    dates.push(d.toISOString().split("T")[0]); // YYYY-MM-DD
-  }
-  return dates; // Returns newest to oldest
-}
-
+/* Analytics uses the same summaries as the doctor report. */
 function processAnalytics() {
-  const logsRaw = safeParse(localStorage.getItem(STORE_LOGS), {});
-  const meds = safeParse(localStorage.getItem(STORE_MEDS), []);
-  const past30 = getPastNDates(LOOKBACK_DAYS);
-  
-  // Collect logs within timeframe
-  const activeLogs = past30.map(date => {
-    if (logsRaw[date]) return { date, ...logsRaw[date] };
-    return null;
-  }).filter(Boolean);
-
-  const totalLogged = activeLogs.length;
-
-  // --- 1. Handover Summary ---
-  const totalSymptomLogs = activeLogs.reduce((sum, log) => sum + (log.symptoms?.length || 0), 0);
-  const severeLogs = activeLogs.filter(log => log.severity >= 7);
-  const severeCount = severeLogs.length;
-  
-  document.getElementById("summaryBannerText").textContent = 
-    totalLogged === 0 
-      ? "No symptom logs recorded in the last 30 days." 
-      : `${totalSymptomLogs} symptom log${totalSymptomLogs !== 1 ? 's' : ''} in selected period — ${severeCount} severe flare-up${severeCount !== 1 ? 's' : ''}.`;
-
-  // --- 2. KPIs ---
-  // Avg Severity
-  const avgSeverityEl = document.getElementById("avgSeverity");
-  const avgLabelEl = document.getElementById("avgSeverityLabel");
-  if (totalLogged > 0) {
-    const avg = activeLogs.reduce((sum, log) => sum + (log.severity || 0), 0) / totalLogged;
-    avgSeverityEl.textContent = avg.toFixed(1);
-    if (avg <= 3)      avgLabelEl.textContent = "Mild Interference";
-    else if (avg <= 6) avgLabelEl.textContent = "Moderate Interference";
-    else               avgLabelEl.textContent = "Severe Interference";
-  } else {
-    avgSeverityEl.textContent = "0.0";
-    avgLabelEl.textContent = "No data";
-  }
-
-  // Severe Days
-  document.getElementById("daysPeriodLabel").textContent = LOOKBACK_DAYS;
-  document.getElementById("severeDays").textContent = severeCount;
-  document.getElementById("severePercent").textContent = 
-    totalLogged > 0 ? `${Math.round((severeCount / totalLogged) * 100)}% of logs` : "0% of logs";
-
-  // Med Adherence
-  const adherenceEl = document.getElementById("medAdherence");
-  const adherenceSub = document.getElementById("medAdherenceLabel");
-  if (totalLogged > 0 && meds.length > 0) {
-    let taken = 0;
-    let expected = totalLogged * meds.length;
-    activeLogs.forEach(log => {
-      if (Array.isArray(log.medications)) {
-        taken += log.medications.filter(m => m.taken).length;
-      }
+  const days = Number(document.getElementById("analyticsRange").value);
+  const range = CarePulse.period(days);
+  const summary = CarePulseInsights.summarize(range.start, range.end);
+  const logs = summary.logs;
+  document.getElementById("summaryBannerText").textContent = `${logs.length} symptom entries · ${summary.severeDates.length} severe flare-up days · ${range.start} to ${range.end}`;
+  document.getElementById("avgSeverity").textContent = summary.average === null ? "—" : summary.average.toFixed(1);
+  document.getElementById("avgSeverityLabel").textContent = summary.average === null ? "No data" : CarePulse.severityBand(summary.average).label;
+  document.getElementById("daysPeriodLabel").textContent = days;
+  document.getElementById("severeDays").textContent = summary.severeDates.length;
+  const loggedDays = new Set(logs.map(log => log.date)).size;
+  document.getElementById("severePercent").textContent = `${loggedDays ? Math.round(summary.severeDates.length / loggedDays * 100) : 0}% of logged days`;
+  document.getElementById("medAdherence").textContent = `${summary.adherence.taken}/${summary.adherence.expected}`;
+  document.getElementById("medAdherenceLabel").textContent = summary.adherence.percent === null ? "No scheduled doses" : `${summary.adherence.percent}% completed`;
+  const trigger = summary.triggers[0];
+  document.getElementById("topTrigger").textContent = trigger?.name || "—";
+  document.getElementById("topTriggerSub").textContent = trigger ? `Reported ${trigger.count} times` : "No trigger data";
+  renderSeverityTrend(logs);
+  renderFrequencyChart("symptomsChartArea", summary.symptoms, logs.length);
+  renderFrequencyChart("triggerChartArea", summary.triggers, logs.length);
+  const notes = document.getElementById("notesChartArea");
+  notes.classList.remove("empty-state");
+  notes.replaceChildren();
+  summary.observations.forEach(group => {
+    const section = CarePulseUI.element("section", "observation-group");
+    section.appendChild(CarePulseUI.element("strong", "", group.role + ": " + group.logs.length + " entries"));
+    const entries = group.logs.filter(log => log.notes);
+    entries.forEach(log => {
+      const note = CarePulseUI.element("p", "observation-note");
+      note.append(CarePulseUI.element("small", "", log.date), document.createElement("br"), document.createTextNode(log.notes));
+      section.appendChild(note);
     });
-    adherenceEl.textContent = `${taken}/${expected}`;
-    adherenceSub.textContent = `${Math.round((taken / expected) * 100)}% completed`;
-  } else {
-    adherenceEl.textContent = "--";
-    adherenceSub.textContent = meds.length === 0 ? "No medications setup" : "Awaiting schedule";
-  }
-
-  // Top Trigger
-  const triggerCounts = {};
-  activeLogs.forEach(log => {
-    if (Array.isArray(log.triggers)) {
-      log.triggers.forEach(t => { triggerCounts[t] = (triggerCounts[t] || 0) + 1; });
-    }
+    if (!entries.length) section.appendChild(CarePulseUI.element("p", "muted small", "No notes recorded."));
+    notes.appendChild(section);
   });
-  const topTrigger = Object.keys(triggerCounts).sort((a,b) => triggerCounts[b] - triggerCounts[a])[0];
-  if (topTrigger) {
-    document.getElementById("topTrigger").textContent = topTrigger;
-    document.getElementById("topTriggerSub").textContent = `Reported ${triggerCounts[topTrigger]} times`;
-  } else {
-    document.getElementById("topTrigger").textContent = "--";
-    document.getElementById("topTriggerSub").textContent = "No trigger data";
-  }
+}
 
-  // --- 3. Charts ---
-  renderSeverityTrend(activeLogs);
-  renderSymptomsChart(activeLogs, totalLogged);
+// SVG elements require their namespace; HTML uses document.createElement.
+function chartElement(tag, attributes, text) {
+  const node = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  Object.entries(attributes).forEach(([name, value]) => node.setAttribute(name, value));
+  if (text !== undefined) node.textContent = text;
+  return node;
 }
 
 function renderSeverityTrend(logs) {
   const area = document.getElementById("severityChartArea");
-  if (logs.length === 0) {
-    area.innerHTML = `
-      <div class="empty-content">
-        <span class="empty-icon">∿</span>
-        <strong>Awaiting records</strong>
-        <span class="muted small">No severity data yet.</span>
-      </div>`;
-    area.classList.add("empty-state");
+  area.replaceChildren();
+  area.classList.toggle("empty-state", !logs.length);
+  if (!logs.length) {
+    area.appendChild(CarePulseUI.element("p", "muted", "No severity data in this period."));
     return;
   }
-  
-  area.classList.remove("empty-state");
-  
-  // Reverse logs so it's oldest to newest
-  const sortedLogs = [...logs].reverse();
-  
-  // Create a basic SVG line chart
-  const width = 400;
-  const height = 200;
-  const padding = 30;
-  
-  const xStep = (width - padding * 2) / Math.max(sortedLogs.length - 1, 1);
-  const yStep = (height - padding * 2) / 9; // 1 to 10 scale
-
-  let points = "";
-  let circles = "";
-  
-  sortedLogs.forEach((log, i) => {
-    const x = padding + (i * xStep);
-    // Y is inverted (0 is top)
-    const y = height - padding - ((log.severity - 1) * yStep);
-    points += `${x},${y} `;
-    const color = log.severity >= 7 ? "#ef4444" : "#0f766e";
-    circles += `<circle cx="${x}" cy="${y}" r="4" fill="${color}" />`;
-  });
-
-  const svg = `
-    <svg class="trend-chart-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
-      <line x1="${padding}" y1="${height-padding}" x2="${width-padding}" y2="${height-padding}" stroke="#e5e7eb" stroke-width="1" />
-      <line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height-padding}" stroke="#e5e7eb" stroke-width="1" />
-      
-      <text x="5" y="${padding+4}" class="chart-axis-label">10</text>
-      <text x="5" y="${height-padding+4}" class="chart-axis-label">1</text>
-      
-      <polyline points="${points.trim()}" fill="none" stroke="#cbd5e1" stroke-width="2" />
-      
-      ${circles}
-    </svg>
-  `;
-  
-  area.innerHTML = svg;
-}
-
-function renderSymptomsChart(logs, totalLogged) {
-  const area = document.getElementById("symptomsChartArea");
-  
-  const symptomCounts = {};
+  const byDate = new Map();
   logs.forEach(log => {
-    if (Array.isArray(log.symptoms)) {
-      log.symptoms.forEach(s => { symptomCounts[s] = (symptomCounts[s] || 0) + 1; });
-    }
+    if (!byDate.has(log.date)) byDate.set(log.date, []);
+    byDate.get(log.date).push(log.severity);
   });
+  const days = [...byDate].map(([date, values]) => ({ date, severity: values.reduce((sum, value) => sum + value, 0) / values.length }));
+  const dates = CarePulse.datesBetween(days[0].date, days.at(-1).date);
+  const svg = chartElement("svg", {
+    role: "img", "aria-label": "Daily average severity from " + days[0].date + " to " + days.at(-1).date,
+    class: "trend-chart-svg", viewBox: "0 0 400 200"
+  });
+  svg.append(chartElement("line", { x1: 30, y1: 170, x2: 370, y2: 170, stroke: "#e5e7eb" }),
+    chartElement("line", { x1: 30, y1: 30, x2: 30, y2: 170, stroke: "#e5e7eb" }),
+    chartElement("text", { x: 5, y: 34, class: "chart-axis-label" }, "10"),
+    chartElement("text", { x: 5, y: 174, class: "chart-axis-label" }, "1"));
+  const points = days.map(day => ({
+    ...day, x: dates.length === 1 ? 200 : 30 + dates.indexOf(day.date) * 340 / (dates.length - 1),
+    y: 170 - (day.severity - 1) * 140 / 9
+  }));
+  svg.appendChild(chartElement("polyline", {
+    points: points.map(point => point.x + "," + point.y).join(" "), fill: "none", stroke: "#cbd5e1", "stroke-width": 2
+  }));
+  points.forEach(point => {
+    const dot = chartElement("circle", { cx: point.x, cy: point.y, r: 4, fill: point.severity >= 7 ? "#ef4444" : "#0f766e" });
+    dot.appendChild(chartElement("title", {}, point.date + ": " + point.severity.toFixed(1) + "/10"));
+    svg.appendChild(dot);
+  });
+  svg.appendChild(chartElement("text", { x: days.length === 1 ? 200 : 30, y: 196, "text-anchor": days.length === 1 ? "middle" : "start", class: "chart-axis-label" }, days[0].date));
+  if (days.length > 1) svg.appendChild(chartElement("text", { x: 370, y: 196, "text-anchor": "end", class: "chart-axis-label" }, days.at(-1).date));
+  area.appendChild(svg);
+}
 
-  const sortedSymptoms = Object.keys(symptomCounts)
-    .map(name => ({ name, count: symptomCounts[name] }))
-    .sort((a,b) => b.count - a.count)
-    .slice(0, 5); // top 5
-
-  if (sortedSymptoms.length === 0) {
-    area.innerHTML = `
-      <div class="empty-content">
-        <span class="empty-icon">▤</span>
-        <strong>Awaiting records</strong>
-        <span class="muted small">No symptoms logged yet.</span>
-      </div>`;
-    area.classList.add("empty-state");
-    return;
-  }
-
-  area.classList.remove("empty-state");
-  area.innerHTML = "";
-
-  sortedSymptoms.forEach(sym => {
-    const pct = Math.round((sym.count / totalLogged) * 100);
-    area.innerHTML += `
-      <div class="symptom-bar-row">
-        <div class="symptom-label-row">
-          <span class="symptom-name">${escapeHtml(sym.name)}</span>
-          <span class="symptom-count">${pct}% (${sym.count}/${totalLogged})</span>
-        </div>
-        <div class="bar-track">
-          <div class="bar-fill" style="width: ${pct}%"></div>
-        </div>
-      </div>
-    `;
+function renderFrequencyChart(id, frequencies, total) {
+  const area = document.getElementById(id);
+  area.replaceChildren();
+  area.classList.toggle("empty-state", !frequencies.length);
+  if (!frequencies.length) area.appendChild(CarePulseUI.element("p", "muted", "No records in this period."));
+  frequencies.forEach(item => {
+    const percent = Math.round(item.count / total * 100);
+    const row = CarePulseUI.element("div", "symptom-bar-row");
+    const label = CarePulseUI.element("div", "symptom-label-row");
+    label.append(CarePulseUI.element("span", "", item.name),
+      CarePulseUI.element("span", "", percent + "% (" + item.count + "/" + total + ")"));
+    const track = CarePulseUI.element("div", "bar-track");
+    const fill = CarePulseUI.element("div", "bar-fill");
+    fill.style.width = percent + "%";
+    track.appendChild(fill);
+    row.append(label, track);
+    area.appendChild(row);
   });
 }
 
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-}
-
-// Initialize
-document.addEventListener("DOMContentLoaded", () => {
+CarePulse.onReady(() => {
   processAnalytics();
-
-  // --- Dynamic Observation Title based on Role ---
-  const profile = safeParse(localStorage.getItem(STORE_PROFILE), {});
-  // Default to "Patient" if no role exists, and make case-insensitive
-  const userRole = (profile.role || "Patient").toLowerCase(); 
-  
-  const obsTitleEl = document.getElementById("obsTitle");
-  if (obsTitleEl) {
-    if (userRole === "patient") {
-      obsTitleEl.textContent = "Patient Observations";
-    } else {
-      obsTitleEl.textContent = "Patient & Caregiver Observations";
-    }
-  }
+  document.getElementById("analyticsRange").addEventListener("change", () => CarePulse.run(processAnalytics));
+  CarePulse.onChange(processAnalytics);
 });
