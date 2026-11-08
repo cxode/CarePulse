@@ -71,7 +71,7 @@
   <div class="logger-toolbar">
     <div class="toolbar-left">
       <input
-        class="date-input"
+        id="logDate" name="date" form="daily-log-form" required class="date-input"
         type="date"
         aria-label="Log date"
       >
@@ -94,7 +94,7 @@
         <div class="notice">
           <span>⚠</span>
           <div>
-            <strong>Select a severity level</strong>
+            <strong id="severityStatus">Select a severity level</strong>
             <p>
               Choose the number that best reflects today's overall
               symptoms.
@@ -109,7 +109,7 @@
         </div>
 
         <div class="severity-scale">
-          <label><input type="radio" name="severity" value="1"><span>1</span></label>
+          <label><input type="radio" name="severity" value="1" required><span>1</span></label>
           <label><input type="radio" name="severity" value="2"><span>2</span></label>
           <label><input type="radio" name="severity" value="3"><span>3</span></label>
           <label><input type="radio" name="severity" value="4"><span>4</span></label>
@@ -175,6 +175,7 @@
             <span>＋ Custom Symptom</span>
           </label>
         </div>
+        <input id="customSymptom" class="field" aria-label="Custom symptom" placeholder="Describe your symptom" maxlength="100" hidden>
       </section>
 
       <section class="card">
@@ -254,17 +255,6 @@
           placeholder="Add patient or caregiver observations..."
         ></textarea>
 
-        <div class="radio-row">
-          <strong>Recorded by</strong>
-          <label>
-            <input type="radio" name="recorded_by" value="patient">
-            Patient
-          </label>
-          <label>
-            <input type="radio" name="recorded_by" value="caregiver">
-            Caregiver
-          </label>
-        </div>
       </section>
     </form>
 
@@ -286,12 +276,17 @@
         <button
           class="primary wide"
           type="submit"
-          form="daily-log-form"
+          form="daily-log-form" id="saveLogBtn"
         >
           ▤ &nbsp; Save Daily Log
         </button>
       </section>
 
+      <section class="card aside-card">
+        <button type="button" id="newLogBtn">Log Another Flare</button>
+        <button type="button" id="cancelLogBtn">Cancel</button>
+        <p id="logFeedback" role="status" aria-live="polite"></p>
+      </section>
       <section class="card aside-card">
         <h3 style="color: var(--teal)">♢ &nbsp; Local Care Reminder</h3>
         <p>
@@ -301,9 +296,17 @@
       </section>
     </aside>
   </div>
+  <section class="card" id="logHistory">
+    <h2>Saved Symptom Entries</h2>
+    <p id="logSummary" role="status"></p>
+    <div id="savedLogs" class="saved-logs"></div>
+    <section id="logDetails" hidden aria-label="Selected log details"></section>
+  </section>
 </main>
-
-<script src="../assets/js/template.js"></script>
+  <script src="../assets/js/store.js"></script>
+  <script src="../assets/js/ui.js"></script>
+  <script src="../assets/js/template.js"></script>
+  <script src="../assets/js/dailylog.js"></script>
 
 </body>
 </html>

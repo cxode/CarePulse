@@ -78,15 +78,15 @@
       </p>
     </div>
     <div class="report-actions">
-      <select aria-label="Reporting period">
-        <option>Last 30 days</option>
-        <option>Last 7 days</option>
-        <option>Last 90 days</option>
+      <select id="reportPeriod" aria-label="Reporting period">
+        <option value="30">Last 30 days</option>
+        <option value="7">Last 7 days</option>
+        <option value="90">Last 90 days</option>
       </select>
       <button
         class="primary"
         type="button"
-        title="Print functionality will be connected by JavaScript">
+        id="printReportBtn">
         ▤ &nbsp; Print / Save PDF
       </button>
     </div>
@@ -101,22 +101,22 @@
         </div>
       </div>
       <div class="right">
-        <strong>Doctor Report</strong><small>Not generated yet</small>
+        <strong>Doctor Report</strong><small id="reportGenerated">Not generated yet</small>
       </div>
     </div>
 
     <div class="patient-info">
       <div>
-        <small>PATIENT</small><strong>Patient not set</strong>
-        <p>Date of birth: Not provided</p>
+        <small>PATIENT</small><strong id="reportPatient">Patient not set</strong>
+        <p id="reportBirthDate">Date of birth: Not provided</p>
       </div>
       <div>
         <small>CONDITIONS</small>
-        <p>No conditions listed</p>
+        <p id="reportCondition">No conditions listed</p>
       </div>
       <div>
         <small>REPORTING PERIOD</small>
-        <p>No reporting period selected</p>
+        <p id="reportDates">No reporting period selected</p>
       </div>
     </div>
 
@@ -124,16 +124,16 @@
       <h3>Clinical Overview</h3>
       <div class="stats">
         <div class="stat">
-          <small>Symptom Entries</small><strong>—</strong><em>No entries yet</em>
+          <small>Symptom Entries</small><strong id="reportTotal">—</strong>
         </div>
         <div class="stat">
-          <small>Average Severity</small><strong>—</strong>
+          <small>Average Severity</small><strong id="reportAverage">—</strong>
         </div>
         <div class="stat">
-          <small>Severe Flare Dates</small><strong>—</strong><em>No entries yet</em>
+          <small>Severe Flare Dates</small><strong id="reportSevere">—</strong>
         </div>
         <div class="stat">
-          <small>Medication Adherence</small><strong>—</strong><em>No tracked doses</em>
+          <small>Medication Adherence</small><strong id="reportAdherence">—</strong><em id="reportDoseCount">No tracked doses</em>
         </div>
       </div>
     </section>
@@ -149,7 +149,7 @@
             <th>Recorded by</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="reportHistory">
           <tr>
             <td colspan="4" class="empty">
               No symptom entries recorded yet.
@@ -162,17 +162,17 @@
     <div class="report-columns">
       <section class="report-section">
         <h3>Reported Triggers</h3>
-        <p class="empty">No triggers reported.</p>
+        <div id="reportTriggers"><p class="empty">No triggers reported.</p></div>
       </section>
       <section class="report-section">
         <h3>Severe Flare-Up Dates</h3>
-        <p class="empty">No severe flare-ups recorded.</p>
+        <div id="reportSevereDates"><p class="empty">No severe flare-ups recorded.</p></div>
       </section>
     </div>
 
     <section class="report-section">
       <h3>Patient &amp; Caregiver Notes</h3>
-      <p class="empty">No notes recorded.</p>
+      <div id="reportNotes"><p class="empty">No notes recorded.</p></div>
     </section>
 
     <footer class="report-footer">
@@ -181,8 +181,11 @@
     </footer>
   </article>
 </main>
-
-<script src="../assets/js/template.js"></script>
+  <script src="../assets/js/store.js"></script>
+  <script src="../assets/js/ui.js"></script>
+  <script src="../assets/js/insights.js"></script>
+  <script src="../assets/js/template.js"></script>
+  <script src="../assets/js/docreport.js"></script>
 
 </body>
 </html>
