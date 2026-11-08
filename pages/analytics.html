@@ -74,6 +74,8 @@
       <div>
         <div class="eyebrow">CARE TRACKING MATRIX</div>
         <h1 class="page-title">Analytics &amp; Trends</h1>
+        <label for="analyticsRange">Date range</label>
+        <select id="analyticsRange"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option></select>
       </div>
     </div>
 
@@ -97,7 +99,7 @@
       <div class="card kpi-card">
         <span class="kpi-label">Severe Days (<span id="daysPeriodLabel">0</span>)</span>
         <div class="kpi-value"><span id="severeDays">0</span><small>Days</small></div>
-        <span class="kpi-sub" id="severePercent">0% of logs</span>
+        <span class="kpi-sub" id="severePercent">0% of logged days</span>
       </div>
 
       <div class="card kpi-card">
@@ -121,11 +123,11 @@
         <header class="chart-header">
           <div>
             <h3>Daily Severity Trend</h3>
-            <p class="muted small">Acute symptom severity from quality saved entries</p>
+            <p class="muted small">Daily mean severity across saved entries</p>
           </div>
           <div class="legend-inline">
-            <span><i class="dot baseline"></i> Baseline (0-5)</span>
-            <span><i class="dot flare"></i> Acute Flare (6-7)</span>
+            <span><i class="dot baseline"></i> Mild / Moderate (1–6)</span>
+            <span><i class="dot flare"></i> Severe Flare (7–10)</span>
           </div>
         </header>
         <div class="chart-area" id="severityChartArea">
@@ -183,8 +185,16 @@
 
     </div>
   </main>
+<<<<<<< HEAD
 
     <script src="../assets/js/template.js"></script>
   <script src="../js/analytics.js"></script>
+=======
+  <script src="../assets/js/store.js"></script>
+  <script src="../assets/js/ui.js"></script>
+  <script src="../assets/js/insights.js"></script>
+  <script src="../assets/js/template.js"></script>
+  <script src="../assets/js/analytics.js"></script>
+>>>>>>> 37e72dea22dc518b8b85896c8686b309a188c232
 </body>
 </html>

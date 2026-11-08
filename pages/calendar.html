@@ -93,6 +93,7 @@
           <div class="month-nav">
             <button id="prevMonth" type="button" aria-label="Previous month">‹</button>
             <span id="monthLabel">Month</span>
+            <input type="month" id="monthPicker" min="0100-01" max="9999-12" aria-label="Select calendar month and year">
             <button id="nextMonth" type="button" aria-label="Next month">›</button>
           </div>
         </header>
@@ -102,7 +103,7 @@
           <span>Thu</span><span>Fri</span><span>Sat</span>
         </div>
 
-        <div class="calendar-grid" id="calendarGrid" role="grid"></div>
+        <div class="calendar-grid" id="calendarGrid" aria-label="Calendar dates"></div>
 
         <div class="legend">
           <span><i class="dot mild"></i> 1–3 Mild</span>
@@ -134,7 +135,6 @@
 
             <div class="dr-actions">
               <a class="link-btn" id="drEdit" href="#">✎ Edit</a>
-              <button class="link-btn danger" id="drDelete" type="button">🗑 Delete</button>
             </div>
           </div>
         </section>
@@ -150,8 +150,17 @@
           </header>
 
           <form class="med-add-form" id="medAddForm" hidden>
-            <input type="text" id="medName" placeholder="Medication name" required />
-            <input type="text" id="medSchedule" placeholder="e.g. 8:00 AM · Daily" />
+            <label for="medName">Medication name</label>
+            <input type="text" id="medName" maxlength="100" required />
+            <label for="medDosage">Dosage per intake</label>
+            <input type="text" id="medDosage" placeholder="e.g. 1 tablet" maxlength="100" required />
+            <label for="medFrequency">Doses per day</label>
+            <select id="medFrequency"><option value="1">Once daily</option><option value="2">Twice daily</option><option value="3">Three times daily</option><option value="4">Four times daily</option></select>
+            <label for="medStartDate">Start date</label>
+            <input type="date" id="medStartDate" required />
+            <label for="medSchedule">Schedule notes (optional)</label>
+            <input type="text" id="medSchedule" placeholder="e.g. 8:00 AM, after breakfast" maxlength="200" />
+            <p class="muted small">Edits apply from today. Earlier dates keep their original schedule.</p>
             <div class="med-add-actions">
               <button type="submit">Save</button>
               <button type="button" id="medCancel">Cancel</button>
@@ -164,8 +173,9 @@
       </aside>
     </div>
   </main>
-
-    <script src="../assets/js/template.js"></script>
-  <script src="assets/js/calendar.js"></script>
+  <script src="../assets/js/store.js"></script>
+  <script src="../assets/js/ui.js"></script>
+  <script src="../assets/js/template.js"></script>
+  <script src="../assets/js/calendar.js"></script>
 </body>
 </html>

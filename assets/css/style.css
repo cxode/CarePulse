@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap");
+
 
 /* =====================================
    CAREPULSE LOGIN PAGE
@@ -516,7 +516,7 @@ body {
   background: var(--bg);
   color: var(--ink);
   font:
-    14px "DM Sans",
+    14px system-ui,
     Arial,
     sans-serif;
 }
@@ -737,16 +737,6 @@ body {
 .care-page .notes {
   min-height: 115px;
   resize: vertical;
-}
-.care-page .radio-row {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  margin-top: 18px;
-  font-size: 12px;
-}
-.care-page .radio-row input {
-  accent-color: var(--teal);
 }
 .care-page .aside-card {
   padding: 18px;
@@ -1015,53 +1005,7 @@ body {
   overflow-wrap: anywhere;
 }
 
-@media (max-width: 1050px) {
-  .care-page {
-    --cp-sidebar-w: 220px;
-  }
-}
-
 @media (max-width: 720px) {
-  .care-page {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto auto 1fr;
-    grid-template-areas: "sidebar" "topbar" "main";
-  }
-
-  .care-page .sidebar {
-    position: static;
-    height: auto;
-    padding: 12px;
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .care-page .sidebar-nav {
-    flex-direction: row;
-    overflow-x: auto;
-  }
-
-  .care-page .nav-item {
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
-
-  .care-page .local-mode,
-  .care-page .user-card,
-  .care-page .topbar-right {
-    display: none;
-  }
-
-  .care-page .topbar {
-    min-height: 0;
-    padding: 12px;
-  }
-
-  .care-page .topbar-left {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
   .care-page .report-paper-header {
     flex-wrap: wrap;
   }
@@ -1088,4 +1032,35 @@ body {
   .care-page tr {
     break-inside: avoid;
   }
+}
+
+.access-button[aria-pressed="true"] { outline: 2px solid #0f766e; outline-offset: 2px; }
+button:disabled { cursor: default; opacity: .6; }
+#appFeedback { padding: 12px; }
+#appFeedback[data-state="error"] { color: #b91c1c; }
+
+.saved-logs { display: grid; gap: 8px; }
+.saved-log {
+  display: grid;
+  gap: 5px;
+  text-align: left;
+  background: white;
+  border: 1px solid var(--cp-line);
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+}
+.saved-log:hover { background: var(--cp-accent-soft); }
+#logDetails { margin-top: 20px; border-top: 1px solid var(--cp-line); padding-top: 16px; }
+#logDetails button, #newLogBtn, #cancelLogBtn {
+  margin: 5px 5px 5px 0;
+  border: 1px solid var(--cp-line);
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}
+
+@media print {
+  .report-observation { break-inside: avoid; }
 }

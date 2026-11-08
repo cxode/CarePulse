@@ -73,6 +73,7 @@ async function clearLocalData() {
       if (key && key.startsWith(CAREPULSE_STORAGE_PREFIX)) sessionKeys.push(key);
     }
     sessionKeys.forEach((key) => sessionStorage.removeItem(key));
+    sessionStorage.removeItem("carePulseSelectedRole");
     setControlFeedback("All CarePulse data has been removed from this browser.", "success");
     await showCustomModal(
       "Data cleared",
