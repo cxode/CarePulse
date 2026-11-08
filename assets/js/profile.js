@@ -2,17 +2,20 @@ CarePulse.onReady(data => {
   const form = document.getElementById("profileForm");
   const patient = CarePulse.activePatient(data);
   const feedback = document.getElementById("profileFeedback");
+  const caregiverSection = document.getElementById("caregiverSection");
   const caregiverName = document.getElementById("caregiverName");
   const relationship = document.getElementById("relationship");
 
   document.getElementById("patientName").value = patient.name || "";
   document.getElementById("birthDate").value = patient.birthDate || "";
   document.getElementById("condition").value = patient.condition || "";
+  document.getElementById("additionalNotes").value = patient.additionalNotes || "";
   caregiverName.value = patient.caregiverName || "";
   relationship.value = patient.relationship || "";
   document.getElementById("birthDate").max = CarePulse.dateISO();
 
   const caregiverMode = data.role === "Caregiver";
+  caregiverSection.hidden = !caregiverMode;
   caregiverName.required = caregiverMode;
   relationship.required = caregiverMode;
 
@@ -33,6 +36,7 @@ CarePulse.onReady(data => {
         name: CarePulse.normalizeName(document.getElementById("patientName").value),
         birthDate: document.getElementById("birthDate").value,
         condition: document.getElementById("condition").value.trim(),
+        additionalNotes: document.getElementById("additionalNotes").value.trim(),
         caregiverName: CarePulse.normalizeName(caregiverName.value),
         relationship: relationship.value,
         updatedAt: new Date().toISOString()
