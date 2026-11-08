@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analytics &middot; CarePulse</title>
+  <link rel="stylesheet" href="../assets/css/template.css" />
+  <link rel="stylesheet" href="../assets/css/analytics.css" />
+</head>
+<body>
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <a href="calendar.html" class="sidebar-logo">
+      <img src="../assets/CAREPULSE LOGO.png" alt="">
+      <div>
+        <span class="logo-title">CarePulse</span>
+        <span class="logo-sub">Clinical Card</span>
+      </div>
+    </a>
+
+    <a href="profile.html" class="user-card">
+      <div class="user-avatar" id="userInitial">–</div>
+      <div class="user-meta">
+        <span class="user-name" id="userName">—</span>
+        <span class="user-role" id="userRole">—</span>
+      </div>
+      <span class="user-chevron">›</span>
+    </a>
+
+    <button class="btn-flare" type="button">
+      <span aria-hidden="true">⚠</span> Log Acute Flare
+    </button>
+
+   <nav class="sidebar-nav">
+    <a href="dailylog.html"   class="nav-item"><span>📝</span> Daily Logger</a>
+    <a href="calendar.html"   class="nav-item"><span>📅</span> Calendar &amp; Tasks</a>
+    <a href="analytics.html"  class="nav-item"><span>📈</span> Analytics &amp; Trends</a>
+    <a href="docreport.html"  class="nav-item"><span>📄</span> Doctor Report</a>
+    <a href="datapriv.html"   class="nav-item"><span>🔒</span> Data &amp; Privacy</a>
+    <a href="profile.html"    class="nav-item"><span>⚙️</span> Profile Setup</a>
+  </nav>
+
+    <div class="local-mode">
+      <div class="local-mode-label"><span class="dot"></span> Local Care Mode</div>
+      <p id="localModeText">Recording locally</p>
+    </div>
+  </aside>
+
+  <!-- ============ TOPBAR ============ -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="status-pill"><span class="dot"></span> Active Monitoring</span>
+      <span class="topbar-divider"></span>
+      <span class="next-appt" id="nextAppt">No appointment set</span>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-meta">
+        <span id="topRole">—</span>
+        <span class="topbar-sub" id="topMode">Mode</span>
+      </div>
+      <div class="topbar-avatar" id="topInitial">–</div>
+      <button class="btn-logout" id="logoutBtn" type="button">
+        <span>⏻</span> Logout
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ MAIN ============ -->
+  <main class="analytics-main">
+
+    <!-- Header -->
+    <div class="page-head">
+      <div>
+        <div class="eyebrow">CARE TRACKING MATRIX</div>
+        <h1 class="page-title">Analytics &amp; Trends</h1>
+        <label for="analyticsRange">Date range</label>
+        <select id="analyticsRange"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option></select>
+      </div>
+    </div>
+
+    <!-- Handover Summary Banner -->
+    <div class="handover-banner">
+      <div class="hb-icon"> 🖋️</div>
+      <div class="hb-text">
+        <h4>CLINICAL HANDOVER SUMMARY</h4>
+        <p id="summaryBannerText">Analyzing your recent records...</p>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="card kpi-card">
+        <span class="kpi-label">Avg Severity Score</span>
+        <div class="kpi-value"><span id="avgSeverity">0.0</span><small>/10</small></div>
+        <span class="kpi-sub" id="avgSeverityLabel">No data</span>
+      </div>
+      
+      <div class="card kpi-card">
+        <span class="kpi-label">Severe Days (<span id="daysPeriodLabel">0</span>)</span>
+        <div class="kpi-value"><span id="severeDays">0</span><small>Days</small></div>
+        <span class="kpi-sub" id="severePercent">0% of logged days</span>
+      </div>
+
+      <div class="card kpi-card">
+        <span class="kpi-label">Med Adherence</span>
+        <div class="kpi-value"><span id="medAdherence">--</span><small>doses/total</small></div>
+        <span class="kpi-sub" id="medAdherenceLabel">Awaiting schedule</span>
+      </div>
+
+      <div class="card kpi-card">
+        <span class="kpi-label">Top Reported Trigger</span>
+        <div class="kpi-value text-md" id="topTrigger">--</div>
+        <span class="kpi-sub" id="topTriggerSub">No trigger data</span>
+      </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="analytics-grid">
+      
+      <!-- Severity Trend -->
+      <section class="card chart-card">
+        <header class="chart-header">
+          <div>
+            <h3>Daily Severity Trend</h3>
+            <p class="muted small">Daily mean severity across saved entries</p>
+          </div>
+          <div class="legend-inline">
+            <span><i class="dot baseline"></i> Mild / Moderate (1–6)</span>
+            <span><i class="dot flare"></i> Severe Flare (7–10)</span>
+          </div>
+        </header>
+        <div class="chart-area" id="severityChartArea">
+          <!-- Chart populated by JS -->
+        </div>
+      </section>
+
+      <!-- Trigger Frequency -->
+      <section class="card chart-card">
+        <header class="chart-header">
+          <div>
+            <h3>Reported Trigger Frequency</h3>
+            <p class="muted small">Frequency summary — not medical causation</p>
+          </div>
+        </header>
+        <div class="chart-area empty-state" id="triggerChartArea">
+          <div class="empty-content">
+            <span class="empty-icon">∿</span>
+            <strong>Awaiting records</strong>
+            <span class="muted small">No triggers reported yet.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Most Frequent Symptoms -->
+      <section class="card chart-card">
+        <header class="chart-header">
+          <div>
+            <h3>Most Frequent Symptoms</h3>
+            <p class="muted small">Occurrence distribution across saved logs</p>
+          </div>
+        </header>
+        <div class="chart-area" id="symptomsChartArea">
+          <!-- Bars populated by JS -->
+        </div>
+      </section>
+
+      <!-- Patient & Caregiver Observations -->
+      <section class="card chart-card">
+        <header class="chart-header">
+          <div>
+            <!-- ID added here for JS to target -->
+            <h3 id="obsTitle">Patient &amp; Caregiver Observations</h3>
+            <p class="muted small">Notes from the selected period</p>
+          </div>
+        </header>
+        <div class="chart-area empty-state" id="notesChartArea">
+          <div class="empty-content">
+            <span class="empty-icon">∿</span>
+            <strong>Awaiting records</strong>
+            <span class="muted small">No notes yet.</span>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+<<<<<<< HEAD
+
+    <script src="../assets/js/template.js"></script>
+  <script src="../js/analytics.js"></script>
+=======
+  <script src="../assets/js/store.js"></script>
+  <script src="../assets/js/ui.js"></script>
+  <script src="../assets/js/insights.js"></script>
+  <script src="../assets/js/template.js"></script>
+  <script src="../assets/js/analytics.js"></script>
+>>>>>>> 37e72dea22dc518b8b85896c8686b309a188c232
+</body>
+</html>

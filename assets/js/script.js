@@ -1,66 +1,16 @@
-document.addEventListener("DOMContentLoaded", function () {
+CarePulse.onReady(data => {
+  document.getElementById("profileStatus").textContent = data.patients.length ? "Choose Patient or Caregiver mode to continue." : "No patient profiles saved on this device.";
 
-    const PROFILE_KEY = "carePulsePatientProfile";
-
-    const accessButtons = document.querySelectorAll(".access-button");
-    const profileStatus = document.getElementById("profileStatus");
-
-    // Check if a patient profile exists
-    const savedProfile = localStorage.getItem(PROFILE_KEY);
-
-    if (savedProfile) {
-        try {
-            const profile = JSON.parse(savedProfile);
-
-            if (profile && profile.patientName) {
-                profileStatus.textContent =
-                    "Patient profile saved: " + profile.patientName;
-            } else {
-                profileStatus.textContent =
-                    "No patient profiles saved on this device.";
-            }
-
-        } catch (error) {
-            profileStatus.textContent =
-                "No patient profiles saved on this device.";
-        }
-
-    } else {
-        profileStatus.textContent =
-            "No patient profiles saved on this device.";
-    }
-
-
-    // Handle Patient and Caregiver access
-    accessButtons.forEach(function (button) {
-
-        button.addEventListener("click", function () {
-
-            const selectedRole = button.dataset.role;
-
-            // Save selected role
-            sessionStorage.setItem(
-                "carePulseSelectedRole",
-                selectedRole
-            );
-
-            // Check if a profile exists
-            const profile = localStorage.getItem(PROFILE_KEY);
-
-            if (!profile) {
-
-                // Redirect to profile creation
-                window.location.href = "create-profile.html";
-
-            } else {
-
-                // Redirect to the daily log
-                window.location.href = "pages/dailylog.html";
-
-            }
-
-        });
-
-    });
-
-});
+  document.querySelectorAll(".access-button").forEach(button => {
+    button.setAttribute("aria-pressed", String(button.dataset.role === data.role));
+    button.addEventListener("click", () => CarePulse.run(() => {
+      if (CarePulse.read().patients.length) {
+        CarePulse.startSession(button.dataset.role);
+        location.href = "pages/dailylog.html";
+      } else {
+        CarePulse.setRole(button.dataset.role);
+        location.href = "create-profile.html";
+      }
+    }));
+  });
+}, false);

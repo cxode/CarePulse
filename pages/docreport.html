@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Report | CarePulse</title>
+
+    <link rel="stylesheet" href="../assets/css/template.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="care-page">
+<!-- ============ SIDEBAR ============ -->
+<aside class="sidebar">
+  <a href="calendar.html" class="sidebar-logo">
+    <img src="../assets/CAREPULSE LOGO.png" alt="CarePulse logo">
+    <div>
+      <span class="logo-title">CarePulse</span>
+      <span class="logo-sub">Clinical Card</span>
+    </div>
+  </a>
+
+  <a href="profile.html" class="user-card">
+    <div class="user-avatar" id="userInitial">–</div>
+    <div class="user-meta">
+      <span class="user-name" id="userName">—</span>
+      <span class="user-role" id="userRole">—</span>
+    </div>
+    <span class="user-chevron">›</span>
+  </a>
+
+  <button class="btn-flare" type="button">
+    <span aria-hidden="true">⚠</span> Log Acute Flare
+  </button>
+
+  <nav class="sidebar-nav" aria-label="Main navigation">
+    <a href="dailylog.html"   class="nav-item"><span>📝</span> Daily Logger</a>
+    <a href="calendar.html"   class="nav-item"><span>📅</span> Calendar &amp; Tasks</a>
+    <a href="analytics.html"  class="nav-item"><span>📈</span> Analytics &amp; Trends</a>
+    <a href="docreport.html"  class="nav-item"><span>📄</span> Doctor Report</a>
+    <a href="datapriv.html"   class="nav-item"><span>🔒</span> Data &amp; Privacy</a>
+    <a href="profile.html"    class="nav-item"><span>⚙️</span> Profile Setup</a>
+  </nav>
+
+  <div class="local-mode">
+    <div class="local-mode-label"><span class="dot"></span> Local Care Mode</div>
+    <p id="localModeText">Recording locally</p>
+  </div>
+</aside>
+
+  <!-- ============ TOPBAR ============ -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="status-pill"><span class="dot"></span> Active Monitoring</span>
+      <span class="topbar-divider"></span>
+      <span class="next-appt" id="nextAppt">No appointment set</span>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-meta">
+        <span id="topRole">—</span>
+        <span class="topbar-sub" id="topMode">Mode</span>
+      </div>
+      <div class="topbar-avatar" id="topInitial">–</div>
+      <button class="btn-logout" id="logoutBtn" type="button">
+        <span>⏻</span> Logout
+      </button>
+    </div>
+  </header>
+
+<main class="content">
+  <div class="report-title">
+    <div>
+      <div class="eyebrow">CLINICAL EXPORT</div>
+      <h1>Doctor Report</h1>
+      <p>
+        Review the locally generated summary before printing or saving
+        as PDF.
+      </p>
+    </div>
+    <div class="report-actions">
+      <select id="reportPeriod" aria-label="Reporting period">
+        <option value="30">Last 30 days</option>
+        <option value="7">Last 7 days</option>
+        <option value="90">Last 90 days</option>
+      </select>
+      <button
+        class="primary"
+        type="button"
+        id="printReportBtn">
+        ▤ &nbsp; Print / Save PDF
+      </button>
+    </div>
+  </div>
+
+  <article class="report-paper">
+    <div class="report-paper-header">
+      <div class="report-brand">
+        <img src="../assets/CAREPULSE%20LOGO.png" alt="CarePulse logo">
+        <div>
+          <strong>CarePulse</strong><small>CLINICAL CARE SUMMARY</small>
+        </div>
+      </div>
+      <div class="right">
+        <strong>Doctor Report</strong><small id="reportGenerated">Not generated yet</small>
+      </div>
+    </div>
+
+    <div class="patient-info">
+      <div>
+        <small>PATIENT</small><strong id="reportPatient">Patient not set</strong>
+        <p id="reportBirthDate">Date of birth: Not provided</p>
+      </div>
+      <div>
+        <small>CONDITIONS</small>
+        <p id="reportCondition">No conditions listed</p>
+      </div>
+      <div>
+        <small>REPORTING PERIOD</small>
+        <p id="reportDates">No reporting period selected</p>
+      </div>
+    </div>
+
+    <section class="report-section">
+      <h3>Clinical Overview</h3>
+      <div class="stats">
+        <div class="stat">
+          <small>Symptom Entries</small><strong id="reportTotal">—</strong>
+        </div>
+        <div class="stat">
+          <small>Average Severity</small><strong id="reportAverage">—</strong>
+        </div>
+        <div class="stat">
+          <small>Severe Flare Dates</small><strong id="reportSevere">—</strong>
+        </div>
+        <div class="stat">
+          <small>Medication Adherence</small><strong id="reportAdherence">—</strong><em id="reportDoseCount">No tracked doses</em>
+        </div>
+      </div>
+    </section>
+
+    <section class="report-section">
+      <h3>Severity &amp; Symptom History</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Severity</th>
+            <th>Symptoms</th>
+            <th>Recorded by</th>
+          </tr>
+        </thead>
+        <tbody id="reportHistory">
+          <tr>
+            <td colspan="4" class="empty">
+              No symptom entries recorded yet.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="report-columns">
+      <section class="report-section">
+        <h3>Reported Triggers</h3>
+        <div id="reportTriggers"><p class="empty">No triggers reported.</p></div>
+      </section>
+      <section class="report-section">
+        <h3>Severe Flare-Up Dates</h3>
+        <div id="reportSevereDates"><p class="empty">No severe flare-ups recorded.</p></div>
+      </section>
+    </div>
+
+    <section class="report-section">
+      <h3>Patient &amp; Caregiver Notes</h3>
+      <div id="reportNotes"><p class="empty">No notes recorded.</p></div>
+    </section>
+
+    <footer class="report-footer">
+      Educational prototype. Information is stored locally and is not a
+      substitute for professional medical advice.
+    </footer>
+  </article>
+</main>
+  <script src="../assets/js/store.js"></script>
+  <script src="../assets/js/ui.js"></script>
+  <script src="../assets/js/insights.js"></script>
+  <script src="../assets/js/template.js"></script>
+  <script src="../assets/js/docreport.js"></script>
+
+</body>
+</html>
