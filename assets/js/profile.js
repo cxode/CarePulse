@@ -146,7 +146,6 @@ function saveProfile(event) {
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("profileForm");
-  const addPatientButton = document.getElementById("addPatientBtn");
   const birthDateInput = document.getElementById("birthDate");
   const today = new Date();
   birthDateInput.max = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
@@ -161,11 +160,5 @@ document.addEventListener("DOMContentLoaded", () => {
     setProfileFeedback("Saved profile data could not be read. Export your data before replacing it.", "error");
   }
 
-  addPatientButton.addEventListener("click", () => {
-    document.getElementById("additionalPatients").appendChild(makePatientCard());
-    const patientNameInputs = document.querySelectorAll("[data-patient-name]");
-    patientNameInputs[patientNameInputs.length - 1].focus();
-    setProfileFeedback("");
-  });
   form.addEventListener("submit", saveProfile);
 });
