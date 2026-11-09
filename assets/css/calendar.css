@@ -255,3 +255,16 @@
   .cal-cell { min-height: 70px; padding: 5px 2px; }
   .cal-cell .badge { max-width: 100%; padding: 2px; font-size: 9px; overflow-wrap: anywhere; }
 }
+/* For the daily records header and timestamp */
+.log-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.log-time {
+  font-weight: normal;
+  color: var(--cp-muted);
+}

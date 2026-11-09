@@ -58,24 +58,50 @@ function renderDailyRecords() {
   CarePulseUI.setText("drDate", formatLongDate(date));
   CarePulseUI.setText("drBy", logs.length + " symptom entries");
   CarePulseUI.setText("drSeverityLabel", band.label);
+  
   const score = document.getElementById("drSeverityScore");
   score.className = "severity-score " + band.key;
   score.replaceChildren(document.createTextNode(String(severity ?? "–")), element("small", "", "/10"));
+  
   const entries = document.getElementById("drSymptoms");
   entries.replaceChildren();
-  if (!logs.length) entries.appendChild(element("p", "muted small", "No symptom entries for this date."));
+  
+  if (!logs.length) {
+    entries.appendChild(element("p", "muted small", "No symptom entries for this date."));
+  }
+  
   logs.forEach(log => {
     const entry = element("div", "day-entry");
+    
+    // Format the timestamp
+    const timeStr = log.updatedAt 
+        ? new Date(log.updatedAt).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })
+        : "";
+
+    // Create a header container for severity + timestamp
+    const header = element("div", "log-header");
+    header.append(element("strong", "", log.severity + "/10 · " + (log.loggedBy?.role || "Recorded entry")));
+    if (timeStr) {
+        header.append(element("span", "muted small log-time", " • " + timeStr));
+    }
+
     const edit = element("a", "link-btn", "View / Edit Log");
     edit.href = "dailylog.html?id=" + encodeURIComponent(log.id);
+    
     const remove = CarePulseUI.button("Delete Log", "link-btn danger");
     remove.dataset.deleteLog = log.id;
-    entry.append(element("strong", "", log.severity + "/10 · " + (log.loggedBy?.role || "Recorded entry")),
+    
+    entry.append(
+      header,
       element("p", "", log.symptoms.join(", ")),
       element("p", "", "Triggers: " + (log.triggers.join(", ") || "None reported")),
-      element("p", "observation-note", log.notes || ""), edit, remove);
+      element("p", "observation-note", log.notes || ""), 
+      edit, 
+      remove
+    );
     entries.appendChild(entry);
   });
+
   const add = document.getElementById("drEdit");
   add.textContent = "＋ Add Log";
   add.href = "dailylog.html?date=" + date;
@@ -173,6 +199,7 @@ CarePulse.onReady(() => {
   state.viewYear = today.getFullYear();
   state.viewMonth = today.getMonth();
   state.selectedDate = CarePulse.dateISO();
+  
   document.getElementById("prevMonth").addEventListener("click", () => changeMonth(-1));
   document.getElementById("nextMonth").addEventListener("click", () => changeMonth(1));
   document.getElementById("btnToday").addEventListener("click", goToToday);
@@ -184,21 +211,25 @@ CarePulse.onReady(() => {
     state.viewMonth = month - 1;
     renderCalendar();
   });
+  
   document.getElementById("calendarGrid").addEventListener("click", event => {
     const cell = event.target.closest("[data-date]");
     if (cell) CarePulse.run(() => selectDate(cell.dataset.date));
   });
+  
   document.getElementById("drSymptoms").addEventListener("click", async event => {
     const button = event.target.closest("[data-delete-log]");
     if (button && await showCustomModal("Delete Log", "Permanently delete this symptom entry?", true)) {
       CarePulse.run(() => CarePulse.deleteLog(button.dataset.deleteLog));
     }
   });
+  
   document.getElementById("drCollapse").addEventListener("click", () => {
     const card = document.querySelector(".daily-card");
     card.classList.toggle("collapsed");
     document.getElementById("drCollapse").textContent = card.classList.contains("collapsed") ? "+" : "−";
   });
+  
   const form = document.getElementById("medAddForm");
   document.getElementById("btnAddMed").addEventListener("click", () => openMedicationForm());
   document.getElementById("medCancel").addEventListener("click", () => {
@@ -206,6 +237,7 @@ CarePulse.onReady(() => {
     form.reset();
     editingMedicationId = null;
   });
+  
   form.addEventListener("submit", event => {
     event.preventDefault();
     CarePulse.run(() => {
@@ -221,6 +253,7 @@ CarePulse.onReady(() => {
       CarePulse.feedback("Medication saved. Schedule changes apply from today; earlier dates keep their original schedule.");
     });
   });
+  
   document.getElementById("medList").addEventListener("change", event => {
     const input = event.target.closest("[data-dose]");
     if (input) {
@@ -228,6 +261,7 @@ CarePulse.onReady(() => {
       CarePulse.run(renderMeds);
     }
   });
+  
   document.getElementById("medList").addEventListener("click", async event => {
     const edit = event.target.closest("[data-edit-med]");
     if (edit) CarePulse.run(() => openMedicationForm(CarePulse.patientRecords("medications").find(med => med.id === edit.dataset.editMed)));
@@ -239,6 +273,7 @@ CarePulse.onReady(() => {
       });
     }
   });
+  
   refreshCalendar();
   CarePulse.onChange(refreshCalendar);
 });
