@@ -231,7 +231,39 @@
 .save-profile-button { border-color: var(--cp-accent); background: var(--cp-accent); color: #fff; }
 .save-profile-button:hover { border-color: #0a625a; background: #0a625a; }
 .save-profile-button:disabled { cursor: wait; opacity: .7; }
-.save-profile-button span { font-size: 16px; line-height: 1; }
+.save-profile-button > span:last-child { font-size: 16px; line-height: 1; }
+
+.account-deletion {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--cp-line);
+}
+.account-deletion h2 {
+  margin: 0 0 6px;
+  color: var(--cp-danger);
+  font-size: 13px;
+}
+.account-deletion p {
+  margin: 0;
+  color: var(--cp-muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+.delete-account-button {
+  min-height: 36px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--cp-danger-bd);
+  border-radius: 7px;
+  background: #fffafa;
+  color: var(--cp-danger);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.delete-account-button:hover { background: var(--cp-danger-bg); }
+.delete-account-button:disabled { cursor: wait; opacity: .65; }
 
 @media (max-width: 1000px) {
   .profile-layout { grid-template-columns: minmax(210px, .75fr) minmax(340px, 1fr); gap: 14px; }

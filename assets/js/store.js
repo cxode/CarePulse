@@ -140,7 +140,9 @@ const CarePulse = (() => {
     try { data = raw === null ? migrateLegacyData() : JSON.parse(raw); }
     catch { throw new Error("Saved CarePulse data could not be read. Use Data & Privacy to export it before clearing it."); }
     validateData(data);
-    if (raw === null) localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    if (raw === null && (data.patients.length || data.logs.length || data.medications.length)) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
     return data;
   }
 
@@ -183,6 +185,23 @@ const CarePulse = (() => {
   function endSession() {
     // This safely flips the flag without deleting the profiles array.
     update(data => { data.loggedIn = false; });
+  }
+
+  function clearLocalData() {
+    const localKeys = [];
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (key && key.startsWith("carepulse:")) localKeys.push(key);
+    }
+    localKeys.forEach(key => localStorage.removeItem(key));
+
+    const sessionKeys = [];
+    for (let index = 0; index < sessionStorage.length; index += 1) {
+      const key = sessionStorage.key(index);
+      if (key && key.startsWith("carepulse:")) sessionKeys.push(key);
+    }
+    sessionKeys.forEach(key => sessionStorage.removeItem(key));
+    sessionStorage.removeItem("carePulseSelectedRole");
   }
 
   function patientRecords(key, data = read()) {
@@ -338,5 +357,6 @@ const CarePulse = (() => {
     if (event.persisted) location.reload();
   });
 
-  return { read, update, id, dateISO, parseDate, validDate, datesBetween, period, normalizeName, validName, validateProfile, severityBand, activePatient, selectPatient, setRole, startSession, endSession, patientRecords, savePatients, saveLog, deleteLog, scheduleOn, saveMedication, deleteMedication, markTaken, cleanPageURL, feedback, run, onReady, onChange };
+  
+  return { read, update, id, dateISO, parseDate, validDate, datesBetween, period, normalizeName, validName, validateProfile, severityBand, activePatient, selectPatient, setRole, startSession, endSession, clearLocalData, patientRecords, savePatients, saveLog, deleteLog, scheduleOn, saveMedication, deleteMedication, markTaken, cleanPageURL, feedback, run, onReady, onChange };
 })();

@@ -5,6 +5,7 @@ CarePulse.onReady(data => {
   const caregiverSection = document.getElementById("caregiverSection");
   const caregiverName = document.getElementById("caregiverName");
   const relationship = document.getElementById("relationship");
+  const caregiverSectionTag = document.getElementById("caregiverSectionTag");
 
   document.getElementById("patientName").value = patient.name || "";
   document.getElementById("birthDate").value = patient.birthDate || "";
@@ -18,6 +19,10 @@ CarePulse.onReady(data => {
   caregiverSection.hidden = !caregiverMode;
   caregiverName.required = caregiverMode;
   relationship.required = caregiverMode;
+  caregiverSectionTag.textContent = caregiverMode ? "Required for caregiver mode" : "Optional local mode";
+  document.getElementById("saveProfileLabel").textContent = caregiverMode
+    ? "Update Caregiver Information"
+    : "Save Profile & Start Logging";
 
   ["patientName", "caregiverName"].forEach(id => {
     const input = document.getElementById(id);
@@ -43,7 +48,31 @@ CarePulse.onReady(data => {
       };
 
       CarePulse.savePatients([updatedPatient], patient.id);
-      location.href = "dailylog.html";
+      if (caregiverMode) {
+        CarePulse.feedback("Patient profile and caregiver information updated.", feedback);
+      } else {
+        location.href = "dailylog.html";
+      }
     }, feedback);
+  });
+
+  const deleteAccountButton = document.getElementById("deleteAccountBtn");
+  deleteAccountButton.addEventListener("click", async () => {
+    const confirmed = await showCustomModal(
+      "Delete your account?",
+      "This permanently removes all CarePulse profiles, symptom logs and medication records saved in this browser, for both Patient and Caregiver modes. This cannot be undone. Export a backup from Data & Privacy first if you may need these records.",
+      true
+    );
+    if (!confirmed) return;
+
+    deleteAccountButton.disabled = true;
+    try {
+      CarePulse.clearLocalData();
+      location.replace("../login.html");
+    } catch (error) {
+      console.error("Could not delete the CarePulse account.", error);
+      CarePulse.feedback("Account deletion failed. Check browser storage permissions and try again.", feedback, "error");
+      deleteAccountButton.disabled = false;
+    }
   });
 });

@@ -170,7 +170,7 @@
                 </svg>
                 <h2 id="caregiverSectionTitle">Caregiver Information</h2>
               </div>
-              <span class="section-tag">Optional local mode</span>
+              <span class="section-tag" id="caregiverSectionTag">Optional local mode</span>
             </div>
             <div class="form-field">
               <label for="caregiverName">Caregiver Name</label>
@@ -210,10 +210,17 @@
           <p id="profileFeedback" class="profile-feedback" role="status" aria-live="polite"></p>
           <div class="form-actions">
             <button class="save-profile-button" type="submit">
-              Save Profile &amp; Start Logging <span aria-hidden="true">›</span>
+              <span id="saveProfileLabel">Save Profile &amp; Start Logging</span>
+              <span aria-hidden="true">›</span>
             </button>
           </div>
         </form>
+
+        <section class="account-deletion" aria-labelledby="accountDeletionTitle">
+          <h2 id="accountDeletionTitle">Delete Account</h2>
+          <p>CarePulse has no separate login account. Deleting this account permanently removes all CarePulse profiles and records stored in this browser, including data for both roles.</p>
+          <button class="delete-account-button" id="deleteAccountBtn" type="button">Delete Account</button>
+        </section>
       </section>
     </div>
   </main>

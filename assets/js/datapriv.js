@@ -61,19 +61,7 @@ async function clearLocalData() {
   const button = document.getElementById("clearDataBtn");
   button.disabled = true;
   try {
-    const keys = [];
-    for (let index = 0; index < localStorage.length; index += 1) {
-      const key = localStorage.key(index);
-      if (key && key.startsWith(CAREPULSE_STORAGE_PREFIX)) keys.push(key);
-    }
-    keys.forEach((key) => localStorage.removeItem(key));
-    const sessionKeys = [];
-    for (let index = 0; index < sessionStorage.length; index += 1) {
-      const key = sessionStorage.key(index);
-      if (key && key.startsWith(CAREPULSE_STORAGE_PREFIX)) sessionKeys.push(key);
-    }
-    sessionKeys.forEach((key) => sessionStorage.removeItem(key));
-    sessionStorage.removeItem("carePulseSelectedRole");
+    CarePulse.clearLocalData();
     setControlFeedback("All CarePulse data has been removed from this browser.", "success");
     await showCustomModal(
       "Data cleared",
