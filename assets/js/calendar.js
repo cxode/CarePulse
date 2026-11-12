@@ -91,13 +91,16 @@ function renderDailyRecords() {
     const remove = CarePulseUI.button("Delete Log", "link-btn danger");
     remove.dataset.deleteLog = log.id;
     
+    // NEW: Wrap the actions in a flex container so they aren't touching
+    const actionsContainer = element("div", "log-actions");
+    actionsContainer.append(edit, remove);
+
     entry.append(
       header,
       element("p", "", log.symptoms.join(", ")),
       element("p", "", "Triggers: " + (log.triggers.join(", ") || "None reported")),
       element("p", "observation-note", log.notes || ""), 
-      edit, 
-      remove
+      actionsContainer // Append the container instead of individual buttons
     );
     entries.appendChild(entry);
   });

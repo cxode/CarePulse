@@ -268,3 +268,9 @@
   font-weight: normal;
   color: var(--cp-muted);
 }
+.log-actions {
+  display: flex;
+  gap: 16px; /* Space between the two buttons */
+  align-items: center;
+  margin-top: 10px;
+}
