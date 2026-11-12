@@ -63,20 +63,23 @@ CarePulse.onReady(data => {
 
   const deleteAccountButton = document.getElementById("deleteAccountBtn");
   deleteAccountButton.addEventListener("click", async () => {
+    const isCaregiver = data.role === "Caregiver";
     const confirmed = await showCustomModal(
-      "Delete your account?",
-      "This permanently removes all CarePulse profiles, symptom logs and medication records saved in this browser, for both Patient and Caregiver modes. This cannot be undone. Export a backup from Data & Privacy first if you may need these records.",
+      isCaregiver ? "Delete caregiver account?" : "Delete patient account?",
+      isCaregiver
+        ? "This removes only the caregiver profile currently in use. The patient profile and its records stay saved on this device."
+        : "This removes only the patient profile currently in use. Any caregiver profile and other saved records stay on this device.",
       true
     );
     if (!confirmed) return;
 
     deleteAccountButton.disabled = true;
     try {
-      CarePulse.clearLocalData();
+      CarePulse.deleteCurrentRoleProfile();
       location.replace("../login.html");
     } catch (error) {
-      console.error("Could not delete the CarePulse account.", error);
-      CarePulse.feedback("Account deletion failed. Check browser storage permissions and try again.", feedback, "error");
+      console.error("Could not delete the current CarePulse profile.", error);
+      CarePulse.feedback("Profile deletion failed. Check browser storage permissions and try again.", feedback, "error");
       deleteAccountButton.disabled = false;
     }
   });

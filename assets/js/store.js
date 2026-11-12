@@ -210,6 +210,40 @@ const CarePulse = (() => {
     sessionStorage.removeItem("carePulseSelectedRole");
   }
 
+  function deleteCurrentRoleProfile() {
+    update(data => {
+      const role = data.role || "Patient";
+      const currentId = data.activePatientId;
+      const currentPatient = data.patients.find(patient => patient.id === currentId && patient.role === role);
+
+      if (!currentPatient) {
+        const fallback = data.patients.find(patient => patient.role === role) || data.patients[0];
+        if (!fallback) {
+          data.activePatientId = "";
+          data.loggedIn = false;
+          return;
+        }
+        data.patients = data.patients.filter(patient => patient.id !== fallback.id);
+        data.logs = data.logs.filter(log => log.patientId !== fallback.id);
+        data.medications = data.medications.filter(med => med.patientId !== fallback.id);
+        data.intakes = data.intakes.filter(intake => intake.patientId !== fallback.id);
+        data.activePatientId = "";
+        data.loggedIn = false;
+        return;
+      }
+
+      data.patients = data.patients.filter(patient => patient.id !== currentPatient.id);
+      data.logs = data.logs.filter(log => log.patientId !== currentPatient.id);
+      data.medications = data.medications.filter(med => med.patientId !== currentPatient.id);
+      data.intakes = data.intakes.filter(intake => intake.patientId !== currentPatient.id);
+
+      const remaining = data.patients.length ? data.patients[0] : null;
+      data.activePatientId = remaining ? remaining.id : "";
+      data.role = remaining ? (remaining.role || "Patient") : "Patient";
+      data.loggedIn = Boolean(remaining);
+    });
+  }
+
   function patientRecords(key, data = read()) {
     return data[key].filter(record => record.patientId === data.activePatientId);
   }
@@ -364,5 +398,5 @@ const CarePulse = (() => {
   });
 
   
-  return { read, update, id, dateISO, parseDate, validDate, datesBetween, period, normalizeName, validName, validateProfile, severityBand, activePatient, selectPatient, setRole, startSession, endSession, clearLocalData, patientRecords, savePatients, saveLog, deleteLog, scheduleOn, saveMedication, deleteMedication, markTaken, cleanPageURL, feedback, run, onReady, onChange };
+  return { read, update, id, dateISO, parseDate, validDate, datesBetween, period, normalizeName, validName, validateProfile, severityBand, activePatient, selectPatient, setRole, startSession, endSession, clearLocalData, deleteCurrentRoleProfile, patientRecords, savePatients, saveLog, deleteLog, scheduleOn, saveMedication, deleteMedication, markTaken, cleanPageURL, feedback, run, onReady, onChange };
 })();
