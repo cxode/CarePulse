@@ -7,15 +7,17 @@ CarePulse.onReady(data => {
   const relationship = document.getElementById("relationship");
   const caregiverSectionTag = document.getElementById("caregiverSectionTag");
 
+  const savedNotes = patient.notes ?? patient.additionalNotes ?? "";
   document.getElementById("patientName").value = patient.name || "";
   document.getElementById("birthDate").value = patient.birthDate || "";
   document.getElementById("condition").value = patient.condition || "";
-  document.getElementById("additionalNotes").value = patient.additionalNotes || "";
+  document.getElementById("additionalNotes").value = savedNotes;
   caregiverName.value = patient.caregiverName || "";
   relationship.value = patient.relationship || "";
   document.getElementById("birthDate").max = CarePulse.dateISO();
 
   const caregiverMode = data.role === "Caregiver";
+  caregiverSection.classList.toggle("visible", caregiverMode);
   caregiverSection.hidden = !caregiverMode;
   caregiverName.required = caregiverMode;
   relationship.required = caregiverMode;
@@ -36,17 +38,20 @@ CarePulse.onReady(data => {
   form.addEventListener("submit", event => {
     event.preventDefault();
     CarePulse.run(() => {
+      const notes = document.getElementById("additionalNotes").value.trim();
       const updatedPatient = {
         ...patient,
         name: CarePulse.normalizeName(document.getElementById("patientName").value),
         birthDate: document.getElementById("birthDate").value,
         condition: document.getElementById("condition").value.trim(),
-        additionalNotes: document.getElementById("additionalNotes").value.trim(),
+        additionalNotes: notes,
+        notes,
         caregiverName: CarePulse.normalizeName(caregiverName.value),
         relationship: relationship.value,
         updatedAt: new Date().toISOString()
       };
 
+      CarePulse.validateProfile(updatedPatient, data.role);
       CarePulse.savePatients([updatedPatient], patient.id);
       if (caregiverMode) {
         CarePulse.feedback("Patient profile and caregiver information updated.", feedback);

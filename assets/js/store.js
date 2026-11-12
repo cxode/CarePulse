@@ -49,6 +49,11 @@ const CarePulse = (() => {
   }
 
   function validateProfile(profile, role) {
+    const notesValue = typeof profile.additionalNotes === "string" ? profile.additionalNotes : typeof profile.notes === "string" ? profile.notes : "";
+    if (profile.additionalNotes == null && profile.notes != null) profile.additionalNotes = profile.notes;
+    if (profile.notes == null && profile.additionalNotes != null) profile.notes = profile.additionalNotes;
+    profile.additionalNotes = String(profile.additionalNotes ?? profile.notes ?? "").trim();
+    profile.notes = profile.additionalNotes;
     if (!validName(profile.name)) throw new Error("Enter the patient's first and last name.");
     if (!validDate(profile.birthDate) || profile.birthDate > dateISO()) throw new Error("Enter a valid date of birth that is not in the future.");
     if (!profile.condition.trim()) throw new Error("Enter a diagnosed condition.");
@@ -56,6 +61,7 @@ const CarePulse = (() => {
     if ((role === "Caregiver" || profile.caregiverName) && (!profile.caregiverName || !profile.relationship)) {
       throw new Error("Enter the caregiver's name and relationship.");
     }
+    if (typeof notesValue !== "string") throw new Error("Patient notes must be saved as text.");
   }
 
   function severityBand(severity) {
