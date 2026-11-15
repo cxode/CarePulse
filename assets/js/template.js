@@ -75,46 +75,11 @@ function setupLogout() {
   });
 }
 
-CarePulse.onReady(data => {
+CarePulse.onReady(() => {
   hydrateShell();
   markActiveNav();
   setupLogout();
   
-  // Only build the switcher if patients exist
-  if (data.patients && data.patients.length > 0) {
-      const controls = document.createElement("div");
-      controls.className = "patient-controls";
-      const patientLabel = CarePulseUI.element("label", "", "Active patient");
-      patientLabel.htmlFor = "activePatient";
-      const patientSelect = document.createElement("select");
-      patientSelect.id = "activePatient";
-      data.patients.forEach(patient => {
-        const option = CarePulseUI.element("option", "", patient.name);
-        option.value = patient.id;
-        patientSelect.appendChild(option);
-      });
-      const roleLabel = CarePulseUI.element("label", "", "Recording mode");
-      roleLabel.htmlFor = "activeMode";
-      const roleSelect = document.createElement("select");
-      roleSelect.id = "activeMode";
-      ["Patient", "Caregiver"].forEach(role => roleSelect.appendChild(CarePulseUI.element("option", "", role)));
-      controls.append(patientLabel, patientSelect, roleLabel, roleSelect);
-      document.querySelector(".local-mode").before(controls);
-      
-      patientSelect.value = data.activePatientId;
-      roleSelect.value = data.role;
-      
-      patientSelect.addEventListener("change", () => CarePulse.run(() => {
-        CarePulse.selectPatient(patientSelect.value);
-        location.href = CarePulse.cleanPageURL();
-      }));
-      
-      roleSelect.addEventListener("change", () => CarePulse.run(() => {
-        CarePulse.setRole(roleSelect.value);
-        location.reload();
-      }));
-  }
-
   document.querySelector(".btn-flare")?.addEventListener("click", () => {
     location.href = "dailylog.html?new=1";
   });
