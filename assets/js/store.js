@@ -49,10 +49,8 @@ const CarePulse = (() => {
   }
 
   function validateProfile(profile, role) {
-    const notesValue = typeof profile.additionalNotes === "string" ? profile.additionalNotes : typeof profile.notes === "string" ? profile.notes : "";
-    if (profile.additionalNotes == null && profile.notes != null) profile.additionalNotes = profile.notes;
-    if (profile.notes == null && profile.additionalNotes != null) profile.notes = profile.additionalNotes;
-    profile.additionalNotes = String(profile.additionalNotes ?? profile.notes ?? "").trim();
+    const notesValue = profile.additionalNotes ?? profile.notes ?? "";
+    profile.additionalNotes = String(notesValue).trim();
     profile.notes = profile.additionalNotes;
     if (!validName(profile.name)) throw new Error("Enter the patient's first and last name.");
     if (!validDate(profile.birthDate) || profile.birthDate > dateISO()) throw new Error("Enter a valid date of birth that is not in the future.");
@@ -61,7 +59,6 @@ const CarePulse = (() => {
     if ((role === "Caregiver" || profile.caregiverName) && (!profile.caregiverName || !profile.relationship)) {
       throw new Error("Enter the caregiver's name and relationship.");
     }
-    if (typeof notesValue !== "string") throw new Error("Patient notes must be saved as text.");
   }
 
   function severityBand(severity) {
@@ -77,25 +74,28 @@ const CarePulse = (() => {
     const oldLogs = readJSON("carepulse:logs", {});
     const oldMeds = readJSON("carepulse:medications", []);
     const data = { version: 1, patients: [], logs: [], medications: [], intakes: [], activePatientId: "", role: "Patient", loggedIn: false };
-    const sourceProfiles = Object.values(profiles);
-    if (single.name) sourceProfiles.push(single);
-    sourceProfiles.forEach(profile => {
+    // Older profile maps used Patient and Caregiver as their keys.
+    const sourceProfiles = Object.entries(profiles);
+    if (single.name) sourceProfiles.push(["", single]);
+    sourceProfiles.forEach(([sourceRole, profile]) => {
       const patients = profile.patients?.length ? profile.patients : [profile];
       patients.forEach(patient => {
         if (!patient.name) return;
-        const existing = data.patients.find(p => p.name === patient.name && p.birthDate === patient.birthDate);
+        // Use only explicit stored roles; session mode does not identify a profile's role.
+        const role = patient.role ?? profile.role ?? (roles.includes(sourceRole) ? sourceRole : undefined);
+        const existing = data.patients.find(p => p.name === patient.name && p.birthDate === patient.birthDate && p.role === role);
         if (existing) {
           if (profile.caregiverName) Object.assign(existing, { caregiverName: profile.caregiverName, relationship: profile.relationship });
         } else {
-          data.patients.push({ ...profile, ...patient, patients: undefined, id: id() });
+          data.patients.push({ ...profile, ...patient, patients: undefined, id: id(), role });
         }
       });
     });
     const legacyLogs = Array.isArray(oldLogs) ? oldLogs : Object.entries(oldLogs).map(([date, log]) => ({ ...log, date }));
-    let owner = data.patients.length === 1 ? data.patients[0] : null;
+    const owner = data.patients.length === 1 ? data.patients[0] : null;
+    // Unscoped records cannot be assigned safely when their owner is unknown.
     if (!owner && (legacyLogs.length || oldMeds.length)) {
-      owner = { id: id(), name: "Recovered Records", birthDate: "", condition: "Update this profile to identify the owner of these older records." };
-      data.patients.push(owner);
+      throw new Error("The owner of older records could not be identified.");
     }
     data.logs = legacyLogs.map(log => ({
       ...log, id: id(), patientId: owner.id, severity: Number(log.severity),
@@ -133,9 +133,15 @@ const CarePulse = (() => {
     if (!data.logs.every(log => patientExists(log) && validDate(log.date) && Number.isInteger(log.severity) &&
       log.severity >= 1 && log.severity <= 10 && textList(log.symptoms) && textList(log.triggers) &&
       (!log.loggedBy || (record(log.loggedBy) && typeof log.loggedBy.role === "string")))) invalid();
-    if (!data.medications.every(med => patientExists(med) && typeof med.name === "string" && validDate(med.startDate) &&
-      (!med.endDate || validDate(med.endDate)) && Array.isArray(med.changes) && med.changes.length &&
-      med.changes.every(change => record(change) && validDate(change.date) && Number.isInteger(change.frequency) && change.frequency >= 1 && change.frequency <= 4))) invalid();
+    for (const med of data.medications) {
+      if (!patientExists(med) || typeof med.name !== "string" || !validDate(med.startDate)) invalid();
+      if (med.endDate && !validDate(med.endDate)) invalid();
+      if (!Array.isArray(med.changes) || med.changes.length === 0) invalid();
+      for (const change of med.changes) {
+        if (!record(change) || !validDate(change.date)) invalid();
+        if (!Number.isInteger(change.frequency) || change.frequency < 1 || change.frequency > 4) invalid();
+      }
+    }
     if (!data.intakes.every(intake => record(intake) && patientExists(intake) && validDate(intake.date) &&
       Number.isInteger(intake.dose) && intake.dose >= 0 && data.medications.some(med => med.id === intake.medicationId && med.patientId === intake.patientId))) invalid();
   }
@@ -179,8 +185,11 @@ const CarePulse = (() => {
   function startSession(role) {
     if (!roles.includes(role)) throw new Error("Select Patient or Caregiver mode.");
     update(data => {
-      // FIXED: Find a patient that matches the requested role, NOT just the first one.
-      const patient = data.patients.find(p => p.role === role);
+      // Resume the selected profile if it belongs to the requested role.
+      let patient = activePatient(data);
+      if (!patient || patient.role !== role) {
+        patient = data.patients.find(p => p.role === role);
+      }
       if (!patient) throw new Error(`No ${role} profile found. Please create one.`);
       data.activePatientId = patient.id;
       data.role = role;
@@ -216,21 +225,7 @@ const CarePulse = (() => {
       const currentId = data.activePatientId;
       const currentPatient = data.patients.find(patient => patient.id === currentId && patient.role === role);
 
-      if (!currentPatient) {
-        const fallback = data.patients.find(patient => patient.role === role) || data.patients[0];
-        if (!fallback) {
-          data.activePatientId = "";
-          data.loggedIn = false;
-          return;
-        }
-        data.patients = data.patients.filter(patient => patient.id !== fallback.id);
-        data.logs = data.logs.filter(log => log.patientId !== fallback.id);
-        data.medications = data.medications.filter(med => med.patientId !== fallback.id);
-        data.intakes = data.intakes.filter(intake => intake.patientId !== fallback.id);
-        data.activePatientId = "";
-        data.loggedIn = false;
-        return;
-      }
+      if (!currentPatient) throw new Error("The active profile could not be identified. Select the intended profile before deleting it.");
 
       data.patients = data.patients.filter(patient => patient.id !== currentPatient.id);
       data.logs = data.logs.filter(log => log.patientId !== currentPatient.id);
@@ -274,9 +269,13 @@ const CarePulse = (() => {
       const index = data.logs.findIndex(item => item.id === log.id && item.patientId === patient.id);
       if (log.id && index < 0) throw new Error("This log is no longer available for this patient.");
       const record = {
-        ...log, id: log.id || id(), patientId: patient.id,
-        symptoms: [...new Set(log.symptoms.map(value => value.trim()))], triggers: [...new Set(log.triggers || [])],
-        notes: String(log.notes || ""), medication: String(log.medication || ""),
+        ...log, 
+        id: log.id || id(), 
+        patientId: patient.id,
+        symptoms: [...new Set(log.symptoms.map(value => value.trim()))], 
+        triggers: [...new Set(log.triggers || [])],
+        notes: String(log.notes || ""), 
+        medication: String(log.medication || ""),
         loggedBy: { role: data.role, name: data.role === "Caregiver" ? patient.caregiverName || "" : patient.name },
         updatedAt: new Date().toISOString()
       };
